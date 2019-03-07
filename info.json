@@ -1,0 +1,11 @@
+{
+    "name": "DiscoScience",
+    "version": "0.0.1",
+    "title": "Disco Science",
+    "author": "Daniel Brauer",
+    "contact": "messagetodaniel@gmail.com",
+    "homepage": "",
+    "factorio_version": "0.17",
+    "dependencies": ["base >= 0.17"],
+    "description": "This mod colours the animation of science labs according to the recipe they are researching."
+}
