@@ -4,6 +4,8 @@ local lab = data.raw["lab"]["lab"]
 
 lab.on_animation = lab.off_animation
 
+lab.light = {intensity = 0, size = 0, color = {r = 0, g = 0, b = 0}}
+
 local labStorm =
 {
     type = "animation",
