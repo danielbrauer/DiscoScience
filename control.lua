@@ -8,10 +8,10 @@ ingredientColors =
     ["automation-science-pack"] = {r = 1.0, g = 0.1, b = 0.1},
     ["logistic-science-pack"] =   {r = 0.1, g = 1.0, b = 0.1},
     ["chemical-science-pack"] =   {r = 0.2, g = 0.2, b = 1.0},
-    ["military-science-pack"] =   {r = 0.0, g = 0.0, b = 0.0, a = 20.0},
+    ["military-science-pack"] =   {r = 1.0, g = 0.5, b = 0.0},
     ["production-science-pack"] = {r = 0.8, g = 0.1, b = 0.8},
     ["utility-science-pack"] =    {r = 1.0, g = 0.9, b = 0.1},
-    ["space-science-pack"] =      {r = 0.8, g = 0.8, b = 0.8} 
+    ["space-science-pack"] =      {r = 0.8, g = 0.8, b = 0.8}
 }
 
 getColorsForResearch = function (tech)
@@ -29,13 +29,25 @@ getColorsForResearch = function (tech)
     end
 end
 
-getColorsForForces = function ()
-    local returnTable = {}
-    for index, force in ipairs(game.forces) do
-        returnTable[force] = getColorsForResearch(force.current_research)
-    end
-    return returnTable
+lerp = function (x, a, b)
+    return a + (b - a) * x
 end
+
+lerpColor = function (x, a, b)
+    return {
+        r = lerp(x, a.r, b.r),
+        g = lerp(x, a.g, b.g),
+        b = lerp(x, a.b, b.b)
+    }
+end
+
+-- getColorsForForces = function ()
+--     local returnTable = {}
+--     for index, force in ipairs(game.forces) do
+--         returnTable[force] = getColorsForResearch(force.current_research)
+--     end
+--     return returnTable
+-- end
 
 
 script.on_event(
@@ -61,17 +73,23 @@ script.on_event(
                 -- })
             end
         end
-        if e.tick %60 == 0 then
-            -- local colorsForForces = getColorsForForces()
-            for index, lab in ipairs(labs) do
-                if lab.status == defines.entity_status.working or lab.status == defines.entity_status.low_power then
-                    -- local colors = colorsForForces[lab.force];
-                    local colors = getColorsForResearch(lab.force.current_research)
-                    rendering.set_visible(labAnimations[lab.unit_number], true)
-                    rendering.set_color(labAnimations[lab.unit_number], colors[math.random(#colors)])
-                else
-                    rendering.set_visible(labAnimations[lab.unit_number], false)
-                end
+        -- local colorsForForces = getColorsForForces()
+        for index, lab in ipairs(labs) do
+            if lab.status == defines.entity_status.working or lab.status == defines.entity_status.low_power then
+                -- local colors = colorsForForces[lab.force];
+                rendering.set_visible(labAnimations[lab.unit_number], true)
+                local colors = getColorsForResearch(lab.force.current_research)
+                local t = e.tick + lab.unit_number
+                local index1 = math.floor(t/60.0)
+                local index2 = index1 + 1
+                local color1 = colors[index1%#colors + 1]
+                local color2 = colors[index2%#colors + 1]
+                local dummy, x = math.modf(t/60.0)
+                x = math.min(x*5, 1)
+                local fcolor = lerpColor(x, color1, color2)
+                rendering.set_color(labAnimations[lab.unit_number], fcolor)
+            else
+                rendering.set_visible(labAnimations[lab.unit_number], false)
             end
         end
     end
