@@ -10,7 +10,7 @@ local floor = math.floor
 local modf = math.modf
 local min = math.min
 
-local labs = nil
+local labsByForce = nil
 local labAnimations = nil
 local labLights = nil
 
@@ -27,10 +27,10 @@ local ingredientColors =
 }
 
 local getColorsForResearch = function (tech)
-    if tech == nil then
+    if not tech then
         return {}
     else
-        if researchColors[tech] == nil then
+        if not researchColors[tech] then
             local colors = {}
             for index, ingredient in pairs(tech.research_unit_ingredients) do
                 colors[index] = ingredientColors[ingredient.name]
@@ -41,50 +41,49 @@ local getColorsForResearch = function (tech)
     end
 end
 
-local lerp = function (x, a, b)
-    return a + (b - a) * x
-end
-
-local lerpColor = function (x, a, b)
-    return {
-        r = lerp(x, a.r, b.r),
-        g = lerp(x, a.g, b.g),
-        b = lerp(x, a.b, b.b)
-    }
+local lerpColor = function (x, a, b, out)
+    out.r = a.r + (b.r - a.r) * x
+    out.g = a.g + (b.g - a.g) * x
+    out.b = a.b + (b.b - a.b) * x
 end
 
 local addLab = function (entity)
     if entity.type == "lab" then
-        table.insert(labs, entity)
-        labAnimations[entity.unit_number] = rendering.draw_animation({
-            animation = "discoscience/lab-storm",
-            surface = entity.surface,
-            target = entity,
-            render_layer = "higher-object-under",
-            -- animation_offset = math.random()*300,
-            -- animation_speed = 0.9 + math.random()*0.2
-        })
-        labLights[entity.unit_number] = rendering.draw_light({
-            sprite = "utility/light_medium",
-            surface = entity.surface,
-            target = entity,
-            intensity = 0.75,
-            size = 8,
-            color = {r = 1.0, g = 1.0, b = 1.0}
-        })
+        if not labsByForce[entity.force.index] then
+            labsByForce[entity.force.index] = {}
+        end
+        table.insert(labsByForce[entity.force.index], entity)
+        if not labAnimations[entity.unit_number] then
+            labAnimations[entity.unit_number] = rendering.draw_animation({
+                animation = "discoscience/lab-storm",
+                surface = entity.surface,
+                target = entity,
+                render_layer = "higher-object-under",
+                animation_offset = floor(math.random()*300)
+            })
+            set_visible(labAnimations[entity.unit_number], false)
+            labLights[entity.unit_number] = rendering.draw_light({
+                sprite = "utility/light_medium",
+                surface = entity.surface,
+                target = entity,
+                intensity = 0.75,
+                size = 8,
+                color = {r = 1.0, g = 1.0, b = 1.0}
+            })
+            set_visible(labLights[entity.unit_number], false)
+        end
     end
 end
 
 local removeLab = function (entity)
     if entity.type == "lab" then
-        if not labAnimations[entity.unit_number] == nil then
-            -- destroy(labAnimations[entity.unit_number])
+        if labAnimations[entity.unit_number] then
             labAnimations[entity.unit_number] = nil
             labLights[entity.unit_number] = nil
         end
-        for index, lab in ipairs(labs) do
+        for index, lab in ipairs(labsByForce[entity.force.index]) do
             if lab == entity then
-                table.remove(labs, index)
+                table.remove(labsByForce[entity.force.index], index)
                 return
             end
         end
@@ -149,33 +148,44 @@ script.on_event(
 script.on_event(
     {defines.events.on_tick},
     function (event)
-        if labs == nil then
-            labs = game.surfaces[1].find_entities_filtered({type = "lab"})
+        if not labsByForce then
+            labsByForce = {}
+            for index, lab in ipairs(game.surfaces[1].find_entities_filtered({type = "lab"})) do
+                addLab(lab)
+            end
         end
-
-        for index, lab in ipairs(labs) do
-            local labAnimation = labAnimations[lab.unit_number]
-            local labLight = labLights[lab.unit_number]
-            if lab.status == working or lab.status == low_power then
-                if not get_visible(labAnimation) then
-                    set_visible(labAnimation, true)
-                    set_visible(labLight, true)
-                end
-                local colors = getColorsForResearch(lab.force.current_research)
-                local t = event.tick + lab.unit_number
-                local index1 = floor(t/60.0)
-                local index2 = index1 + 1
-                local color1 = colors[index1%#colors + 1]
-                local color2 = colors[index2%#colors + 1]
-                local dummy, x = modf(t/60.0)
-                x = min(x*5, 1)
-                local fcolor = lerpColor(x, color1, color2)
-                set_color(labAnimation, fcolor)
-                set_color(labLight, fcolor)
-            else
-                if get_visible(labAnimation) then
-                    set_visible(labAnimation, false)
-                    set_visible(labLight, false)
+        local oddness = event.tick % 5
+        local fcolor = {r=0, g=0, b=0, a=0}
+        for name, force in pairs(game.forces) do
+            if labsByForce[force.index] then
+                local colors = getColorsForResearch(force.current_research)
+                for index, lab in pairs(labsByForce[force.index]) do
+                    if index % 5 == oddness then
+                        local unitNumber = lab.unit_number;
+                        local animation = labAnimations[unitNumber]
+                        local light = labLights[unitNumber]
+                        if lab.status == working or lab.status == low_power then
+                            if not get_visible(animation) then
+                                set_visible(animation, true)
+                                set_visible(light, true)
+                            end
+                            local t = event.tick + unitNumber
+                            local index1 = floor(t/60.0)
+                            local index2 = index1 + 1
+                            local color1 = colors[index1 % #colors + 1]
+                            local color2 = colors[index2 % #colors + 1]
+                            local dummy, x = modf(t/60.0)
+                            x = min(x*5, 1)
+                            lerpColor(x, color1, color2, fcolor)
+                            set_color(animation, fcolor)
+                            set_color(light, fcolor)
+                        else
+                            if get_visible(animation) then
+                                set_visible(animation, false)
+                                set_visible(light, false)
+                            end
+                        end
+                    end
                 end
             end
         end
