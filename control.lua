@@ -145,14 +145,25 @@ script.on_event(
     end
 )
 
+local reloadLabs = function ()
+    labsByForce = {}
+    for index, lab in ipairs(game.surfaces[1].find_entities_filtered({type = "lab"})) do
+        addLab(lab)
+    end
+end
+
+script.on_event(
+    {defines.events.on_forces_merged},
+    function (event)
+        reloadLabs()
+    end
+)
+
 script.on_event(
     {defines.events.on_tick},
     function (event)
         if not labsByForce then
-            labsByForce = {}
-            for index, lab in ipairs(game.surfaces[1].find_entities_filtered({type = "lab"})) do
-                addLab(lab)
-            end
+            reloadLabs()
         end
         local oddness = event.tick % 5
         local fcolor = {r=0, g=0, b=0, a=0}
