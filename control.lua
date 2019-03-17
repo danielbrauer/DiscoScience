@@ -91,17 +91,26 @@ local removeLab = function (entity)
     end
 end
 
+local createData = function ()
+    global.labAnimations = {}
+    global.labLights = {}
+end
+
+local linkData = function ()
+    labAnimations = global.labAnimations
+    labLights = global.labLights
+end
+
 script.on_init(
     function ()
-        global.labAnimations = {}
-        global.labLights = {}
+        createData()
+        linkData()
     end
 )
 
 script.on_load(
     function ()
-        labAnimations = global.labAnimations
-        labLights = global.labLights
+        linkData()
     end
 )
 
