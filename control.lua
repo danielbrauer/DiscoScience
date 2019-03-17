@@ -1,6 +1,7 @@
 --control.lua
 
 local set_color = rendering.set_color
+local get_visible = rendering.get_visible
 local set_visible = rendering.set_visible
 local destroy = rendering.destroy
 local working = defines.entity_status.working
@@ -11,6 +12,7 @@ local min = math.min
 
 local labs = nil
 local labAnimations = nil
+local labLights = nil
 
 local researchColors = {}
 local ingredientColors =
@@ -62,6 +64,14 @@ local addLab = function (entity)
             -- animation_offset = math.random()*300,
             -- animation_speed = 0.9 + math.random()*0.2
         })
+        labLights[entity.unit_number] = rendering.draw_light({
+            sprite = "utility/light_medium",
+            surface = entity.surface,
+            target = entity,
+            intensity = 0.75,
+            size = 8,
+            color = {r = 1.0, g = 1.0, b = 1.0}
+        })
     end
 end
 
@@ -70,6 +80,7 @@ local removeLab = function (entity)
         if not labAnimations[entity.unit_number] == nil then
             -- destroy(labAnimations[entity.unit_number])
             labAnimations[entity.unit_number] = nil
+            labLights[entity.unit_number] = nil
         end
         for index, lab in ipairs(labs) do
             if lab == entity then
@@ -83,12 +94,14 @@ end
 script.on_init(
     function ()
         global.labAnimations = {}
+        global.labLights = {}
     end
 )
 
 script.on_load(
     function ()
         labAnimations = global.labAnimations
+        labLights = global.labLights
     end
 )
 
@@ -133,14 +146,12 @@ script.on_event(
 
         for index, lab in ipairs(labs) do
             local labAnimation = labAnimations[lab.unit_number]
-            -- rendering.draw_light({
-            --     intensity = 0.75,
-            --     size = 8,
-            --     color = {r = 1.0, g = 1.0, b = 1.0}
-            -- })
+            local labLight = labLights[lab.unit_number]
             if lab.status == working or lab.status == low_power then
-                -- local colors = colorsForForces[lab.force];
-                set_visible(labAnimation, true)
+                if not get_visible(labAnimation) then
+                    set_visible(labAnimation, true)
+                    set_visible(labLight, true)
+                end
                 local colors = getColorsForResearch(lab.force.current_research)
                 local t = event.tick + lab.unit_number
                 local index1 = floor(t/60.0)
@@ -151,8 +162,12 @@ script.on_event(
                 x = min(x*5, 1)
                 local fcolor = lerpColor(x, color1, color2)
                 set_color(labAnimation, fcolor)
+                set_color(labLight, fcolor)
             else
-                set_visible(labAnimation, false)
+                if get_visible(labAnimation) then
+                    set_visible(labAnimation, false)
+                    set_visible(labLight, false)
+                end
             end
         end
     end
