@@ -1,0 +1,1 @@
+git archive --format zip --prefix=mod/ --output ../DiscoScience_0.0.3.zip master
