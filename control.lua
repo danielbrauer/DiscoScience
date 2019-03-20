@@ -23,7 +23,8 @@ local ingredientColors =
     ["military-science-pack"] =   {r = 1.0, g = 0.5, b = 0.0},
     ["production-science-pack"] = {r = 0.8, g = 0.1, b = 0.8},
     ["utility-science-pack"] =    {r = 1.0, g = 0.9, b = 0.1},
-    ["space-science-pack"] =      {r = 0.8, g = 0.8, b = 0.8}
+    ["space-science-pack"] =      {r = 0.8, g = 0.8, b = 0.8},
+    ["unrecognized"] =            {r = 1.0, g = 1.0, b = 1.0},
 }
 
 local getColorsForResearch = function (tech)
@@ -34,6 +35,9 @@ local getColorsForResearch = function (tech)
             local colors = {}
             for index, ingredient in pairs(tech.research_unit_ingredients) do
                 colors[index] = ingredientColors[ingredient.name]
+                if not colors[index] then
+                    colors[index] = ingredientColors.unrecognized
+                end
             end
             researchColors[tech] = colors
         end
