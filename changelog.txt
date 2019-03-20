@@ -1,0 +1,5 @@
+---------------------------------------------------------------------------------------------------
+Version: 0.0.4
+Date: 20. 03. 2019
+  Bugfixes:
+    - Fixed fatal Lua error when encountering ingredient with unknown colour. Unknown ingredients now default to white.
