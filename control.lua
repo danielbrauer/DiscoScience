@@ -85,10 +85,12 @@ local removeLab = function (entity)
             labAnimations[entity.unit_number] = nil
             labLights[entity.unit_number] = nil
         end
-        for index, lab in ipairs(labsByForce[entity.force.index]) do
-            if lab == entity then
-                table.remove(labsByForce[entity.force.index], index)
-                return
+        if labsByForce[entity.force.index] then
+            for index, lab in ipairs(labsByForce[entity.force.index]) do
+                if lab == entity then
+                    table.remove(labsByForce[entity.force.index], index)
+                    return
+                end
             end
         end
     end

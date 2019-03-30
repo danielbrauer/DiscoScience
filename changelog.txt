@@ -1,4 +1,11 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.0.5
+Date: 30. 03. 2019
+  Changes:
+    - Icon now looks cooler than the in-game graphics
+  Bugfixes:
+    - Fixed fatal Lua error when encountering unregistered lab. This should increase compatibility with mods that create entities without raising events.
+---------------------------------------------------------------------------------------------------
 Version: 0.0.4
 Date: 20. 03. 2019
   Bugfixes:
