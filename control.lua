@@ -27,6 +27,15 @@ local ingredientColors =
     ["unrecognized"] =            {r = 1.0, g = 1.0, b = 1.0},
 }
 
+local haveShownError = false
+
+local showModError = function (message)
+    if not haveShownError then
+        game.show_message_dialog{text = {"", {message}, {"errors.please-report"}}}
+        haveShownError = true
+    end
+end
+
 local getColorsForResearch = function (tech)
     if not tech then
         return {}
@@ -52,6 +61,10 @@ local lerpColor = function (x, a, b, out)
 end
 
 local addLab = function (entity)
+    if not entity or not entity.valid then
+        showModError("errors.unregistered-entity-created")
+        return
+    end
     if entity.type == "lab" then
         if not labsByForce[entity.force.index] then
             labsByForce[entity.force.index] = {}
@@ -92,7 +105,9 @@ local removeLab = function (entity)
                     return
                 end
             end
-        end
+        else
+            showModError("errors.unregistered-lab-deleted")
+        end 
     end
 end
 

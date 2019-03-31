@@ -1,4 +1,11 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.0.6
+Date: 31. 03. 2019
+  Changes:
+    - When encountering recognised non-fatal errors, DiscoScience will alert the user with a dialog instead of silently ignoring the issue.
+  Bugfixes:
+    - Fixed fatal Lua error when encountering a malformed entity callback
+---------------------------------------------------------------------------------------------------
 Version: 0.0.5
 Date: 30. 03. 2019
   Changes:
