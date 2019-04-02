@@ -1,4 +1,8 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.0.7
+Date: 02. 04. 2019
+  Bugfixes:
+    - Fixed fatal Lua error when encountering lab whose deletion was not registered callback---------------------------------------------------------------------------------------------------
 Version: 0.0.6
 Date: 31. 03. 2019
   Changes:
