@@ -36,9 +36,11 @@ local showModError = function (message)
     end
 end
 
+local defaultColors = {ingredientColors.unrecognized}
+
 local getColorsForResearch = function (tech)
     if not tech then
-        return {}
+        return defaultColors
     else
         if not researchColors[tech] then
             local colors = {}
@@ -47,6 +49,9 @@ local getColorsForResearch = function (tech)
                 if not colors[index] then
                     colors[index] = ingredientColors.unrecognized
                 end
+            end
+            if #colors == 0 then
+                colors = defaultColors
             end
             researchColors[tech] = colors
         end
