@@ -205,12 +205,12 @@ script.on_event(
             if labsByForce[force.index] then
                 local colors = getColorsForResearch(force.current_research)
                 for index, lab in pairs(labsByForce[force.index]) do
-                    if not lab.valid then
-                        showModError("errors.registered-lab-deleted")
-                        reloadLabs()
-                        return
-                    end
                     if index % 5 == oddness then
+                        if not lab.valid then
+                            showModError("errors.registered-lab-deleted")
+                            reloadLabs()
+                            return
+                        end
                         local unitNumber = lab.unit_number;
                         local animation = labAnimations[unitNumber]
                         local light = labLights[unitNumber]
