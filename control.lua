@@ -74,6 +74,10 @@ local addLab = function (entity)
         if not labsByForce[entity.force.index] then
             labsByForce[entity.force.index] = {}
         end
+        if labsByForce[entity.force.index][entity] then
+            showModError("errors.lab-registered-twice")
+            return
+        end
         table.insert(labsByForce[entity.force.index], entity)
         if not labAnimations[entity.unit_number] then
             labAnimations[entity.unit_number] = rendering.draw_animation({
@@ -104,11 +108,15 @@ local removeLab = function (entity)
             labLights[entity.unit_number] = nil
         end
         if labsByForce[entity.force.index] then
+            local removed = false
             for index, lab in ipairs(labsByForce[entity.force.index]) do
                 if lab == entity then
                     table.remove(labsByForce[entity.force.index], index)
-                    return
+                    removed = true
                 end
+            end
+            if not removed then
+                showModError("errors.unregistered-lab-deleted")
             end
         else
             showModError("errors.unregistered-lab-deleted")

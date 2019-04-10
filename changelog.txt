@@ -3,6 +3,7 @@ Version: 0.0.8
 Date: 10. 04. 2019
   Bugfixes:
     - Addressed potential issue with technologies that have no ingredients
+    - Warn about unregistered labs being deleted, or labs being registered twice
 ---------------------------------------------------------------------------------------------------
 Version: 0.0.7
 Date: 02. 04. 2019
