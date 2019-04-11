@@ -1,4 +1,11 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.0.9
+Date: 11. 04. 2019
+  Changes:
+    - Colours mapped by icons instead of tech names (thanks sparr for the idea)
+    - Support for Bob's Tech
+	- Unrecognized science packs use magenta instead of white
+---------------------------------------------------------------------------------------------------
 Version: 0.0.8
 Date: 10. 04. 2019
   Bugfixes:

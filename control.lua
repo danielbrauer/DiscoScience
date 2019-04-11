@@ -15,17 +15,32 @@ local labAnimations = nil
 local labLights = nil
 
 local researchColors = {}
-local ingredientColors =
-{
-    ["automation-science-pack"] = {r = 1.0, g = 0.1, b = 0.1},
-    ["logistic-science-pack"] =   {r = 0.1, g = 1.0, b = 0.1},
-    ["chemical-science-pack"] =   {r = 0.2, g = 0.2, b = 1.0},
-    ["military-science-pack"] =   {r = 1.0, g = 0.5, b = 0.0},
-    ["production-science-pack"] = {r = 0.8, g = 0.1, b = 0.8},
-    ["utility-science-pack"] =    {r = 1.0, g = 0.9, b = 0.1},
-    ["space-science-pack"] =      {r = 0.8, g = 0.8, b = 0.8},
-    ["unrecognized"] =            {r = 1.0, g = 1.0, b = 1.0},
-}
+local ingredientColors
+
+local defaultColors
+
+local createData = function ()
+    global.labAnimations = {}
+    global.labLights = {}
+end
+
+local linkData = function ()
+    labAnimations = global.labAnimations
+    labLights = global.labLights
+end
+
+script.on_init(
+    function ()
+        createData()
+        linkData()
+    end
+)
+
+script.on_load(
+    function ()
+        linkData()
+    end
+)
 
 local haveShownError = false
 
@@ -35,8 +50,6 @@ local showModError = function (message)
         haveShownError = true
     end
 end
-
-local defaultColors = {ingredientColors.unrecognized}
 
 local getColorsForResearch = function (tech)
     if not tech then
@@ -124,29 +137,6 @@ local removeLab = function (entity)
     end
 end
 
-local createData = function ()
-    global.labAnimations = {}
-    global.labLights = {}
-end
-
-local linkData = function ()
-    labAnimations = global.labAnimations
-    labLights = global.labLights
-end
-
-script.on_init(
-    function ()
-        createData()
-        linkData()
-    end
-)
-
-script.on_load(
-    function ()
-        linkData()
-    end
-)
-
 script.on_event(
     {
         defines.events.on_built_entity,
@@ -180,6 +170,21 @@ script.on_event(
 )
 
 local reloadLabs = function ()
+    if not ingredientColors then
+        ingredientColors = {["unrecognized"] = {r = 1.0, g = 0.0, b = 1.0}}
+        local index = 1
+        while true do
+            local prototype = game.entity_prototypes["DiscoScience-colors-"..index]
+            if not prototype then break end
+            local pair = loadstring(prototype.order)
+            for name, color in pairs(pair()) do
+                ingredientColors[name] = color
+            end
+            index = index + 1
+        end
+        defaultColors = {ingredientColors.unrecognized}
+    end
+
     labsByForce = {}
     for index, lab in ipairs(game.surfaces[1].find_entities_filtered({type = "lab"})) do
         addLab(lab)
