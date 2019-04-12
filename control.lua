@@ -1,5 +1,3 @@
---control.lua
-
 local set_color = rendering.set_color
 local get_visible = rendering.get_visible
 local set_visible = rendering.set_visible
@@ -10,35 +8,118 @@ local floor = math.floor
 local modf = math.modf
 local min = math.min
 
-local labsByForce = nil
-local labAnimations = nil
-local labLights = nil
+local labsByForce
+local labAnimations
+local labLights
 
-local researchColors = {}
+local researchColors
 local ingredientColors
 
-local defaultColors
+local unrecognizedColor = {r = 1.0, g = 0.0, b = 1.0}
+local defaultColors = {unrecognizedColor}
+
+local loadIngredientColors = function ()
+    global.ingredientColors = {["unrecognized"] = unrecognizedColor}
+    ingredientColors = global.ingredientColors
+    local index = 1
+    while true do
+        local prototype = game.entity_prototypes["DiscoScience-colors-"..index]
+        if not prototype then break end
+        local pair = loadstring(prototype.order)
+        for name, color in pairs(pair()) do
+            ingredientColors[name] = color
+        end
+        index = index + 1
+    end
+end
 
 local createData = function ()
+    global.labsByForce = {}
     global.labAnimations = {}
     global.labLights = {}
+
+    global.researchColors = {}
+    global.ingredientColors = {}
 end
 
 local linkData = function ()
     labAnimations = global.labAnimations
     labLights = global.labLights
+    labsByForce = global.labsByForce
+
+    researchColors = global.researchColors
+    ingredientColors = global.ingredientColors
+end
+
+local addLab = function (entity)
+    if not entity or not entity.valid then
+        showModError("errors.unregistered-entity-created")
+        return
+    end
+    if entity.type == "lab" then
+        if not labsByForce[entity.force.index] then
+            labsByForce[entity.force.index] = {}
+        end
+        if labsByForce[entity.force.index][entity] then
+            showModError("errors.lab-registered-twice")
+            return
+        end
+        table.insert(labsByForce[entity.force.index], entity)
+        if not labAnimations[entity.unit_number] then
+            labAnimations[entity.unit_number] = rendering.draw_animation({
+                animation = "discoscience/lab-storm",
+                surface = entity.surface,
+                target = entity,
+                render_layer = "higher-object-under",
+                animation_offset = floor(math.random()*300)
+            })
+            set_visible(labAnimations[entity.unit_number], false)
+            labLights[entity.unit_number] = rendering.draw_light({
+                sprite = "utility/light_medium",
+                surface = entity.surface,
+                target = entity,
+                intensity = 0.75,
+                size = 8,
+                color = {r = 1.0, g = 1.0, b = 1.0}
+            })
+            set_visible(labLights[entity.unit_number], false)
+        end
+    end
+end
+
+local reloadLabs = function ()
+    global.labsByForce = {}
+    labsByForce = global.labsByForce
+    for index, lab in ipairs(game.surfaces[1].find_entities_filtered({type = "lab"})) do
+        addLab(lab)
+    end
+end
+
+local resetResearchColors = function ()
+    global.researchColors = {}
+    researchColors = global.researchColors
 end
 
 script.on_init(
     function ()
         createData()
         linkData()
+        reloadLabs()
+        loadIngredientColors()
     end
 )
 
 script.on_load(
     function ()
         linkData()
+    end
+)
+
+script.on_configuration_changed(
+    function ()
+        reloadLabs()
+        resetResearchColors()
+        loadIngredientColors()
     end
 )
 
@@ -77,42 +158,6 @@ local lerpColor = function (x, a, b, out)
     out.r = a.r + (b.r - a.r) * x
     out.g = a.g + (b.g - a.g) * x
     out.b = a.b + (b.b - a.b) * x
-end
-
-local addLab = function (entity)
-    if not entity or not entity.valid then
-        showModError("errors.unregistered-entity-created")
-        return
-    end
-    if entity.type == "lab" then
-        if not labsByForce[entity.force.index] then
-            labsByForce[entity.force.index] = {}
-        end
-        if labsByForce[entity.force.index][entity] then
-            showModError("errors.lab-registered-twice")
-            return
-        end
-        table.insert(labsByForce[entity.force.index], entity)
-        if not labAnimations[entity.unit_number] then
-            labAnimations[entity.unit_number] = rendering.draw_animation({
-                animation = "discoscience/lab-storm",
-                surface = entity.surface,
-                target = entity,
-                render_layer = "higher-object-under",
-                animation_offset = floor(math.random()*300)
-            })
-            set_visible(labAnimations[entity.unit_number], false)
-            labLights[entity.unit_number] = rendering.draw_light({
-                sprite = "utility/light_medium",
-                surface = entity.surface,
-                target = entity,
-                intensity = 0.75,
-                size = 8,
-                color = {r = 1.0, g = 1.0, b = 1.0}
-            })
-            set_visible(labLights[entity.unit_number], false)
-        end
-    end
 end
 
 local removeLab = function (entity)
@@ -170,28 +215,6 @@ script.on_event(
     end
 )
 
-local reloadLabs = function ()
-    if not ingredientColors then
-        ingredientColors = {["unrecognized"] = {r = 1.0, g = 0.0, b = 1.0}}
-        local index = 1
-        while true do
-            local prototype = game.entity_prototypes["DiscoScience-colors-"..index]
-            if not prototype then break end
-            local pair = loadstring(prototype.order)
-            for name, color in pairs(pair()) do
-                ingredientColors[name] = color
-            end
-            index = index + 1
-        end
-        defaultColors = {ingredientColors.unrecognized}
-    end
-
-    labsByForce = {}
-    for index, lab in ipairs(game.surfaces[1].find_entities_filtered({type = "lab"})) do
-        addLab(lab)
-    end
-end
-
 script.on_event(
     {defines.events.on_forces_merged},
     function (event)
@@ -202,9 +225,6 @@ script.on_event(
 script.on_event(
     {defines.events.on_tick},
     function (event)
-        if not labsByForce then
-            reloadLabs()
-        end
         local oddness = event.tick % 5
         local fcolor = {r=0, g=0, b=0, a=0}
         for name, force in pairs(game.forces) do

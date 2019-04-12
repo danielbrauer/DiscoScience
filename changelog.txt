@@ -5,6 +5,7 @@ Date: 12. 04. 2019
     - Log missing ingredient colours on load
   Bugfixes:
     - Stopped indexing a table by LuaEntity (this should prevent RAM leak)
+    - Mutable state is all stored in global (this should prevent desyncs)
 ---------------------------------------------------------------------------------------------------
 Version: 0.0.9
 Date: 11. 04. 2019
