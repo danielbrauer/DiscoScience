@@ -55,7 +55,8 @@ local getColorsForResearch = function (tech)
     if not tech then
         return defaultColors
     else
-        if not researchColors[tech] then
+        local techName = tech.prototype.name;
+        if not researchColors[techName] then
             local colors = {}
             for index, ingredient in pairs(tech.research_unit_ingredients) do
                 colors[index] = ingredientColors[ingredient.name]
@@ -66,9 +67,9 @@ local getColorsForResearch = function (tech)
             if #colors == 0 then
                 colors = defaultColors
             end
-            researchColors[tech] = colors
+            researchColors[techName] = colors
         end
-        return researchColors[tech]
+        return researchColors[techName]
     end
 end
 

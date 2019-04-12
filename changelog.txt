@@ -3,6 +3,8 @@ Version: 0.0.10
 Date: 12. 04. 2019
   Changes:
     - Log missing ingredient colours on load
+  Bugfixes:
+    - Stopped indexing a table by LuaEntity (this should prevent RAM leak)
 ---------------------------------------------------------------------------------------------------
 Version: 0.0.9
 Date: 11. 04. 2019
