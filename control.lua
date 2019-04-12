@@ -7,6 +7,14 @@ local low_power = defines.entity_status.low_power
 local floor = math.floor
 local modf = math.modf
 local min = math.min
+local cos = math.cos
+local atan2 = math.atan2
+local abs = math.abs
+local pi = math.pi
+local random = math.random
+
+local math2d = require("math2d")
+local distance = math2d.position.distance
 
 local labsByForce
 local labAnimations
@@ -71,7 +79,7 @@ local addLab = function (entity)
                 surface = entity.surface,
                 target = entity,
                 render_layer = "higher-object-under",
-                animation_offset = floor(math.random()*300)
+                animation_offset = floor(random()*300)
             })
             set_visible(labAnimations[entity.unit_number], false)
             labLights[entity.unit_number] = rendering.draw_light({
@@ -154,12 +162,6 @@ local getColorsForResearch = function (tech)
     end
 end
 
-local lerpColor = function (x, a, b, out)
-    out.r = a.r + (b.r - a.r) * x
-    out.g = a.g + (b.g - a.g) * x
-    out.b = a.b + (b.b - a.b) * x
-end
-
 local removeLab = function (entity)
     if entity.type == "lab" then
         if labAnimations[entity.unit_number] then
@@ -222,14 +224,84 @@ script.on_event(
     end
 )
 
+local lerpColor = function (x, a, b, out)
+    out.r = a.r + (b.r - a.r) * x
+    out.g = a.g + (b.g - a.g) * x
+    out.b = a.b + (b.b - a.b) * x
+end
+
+local colorFunctions = {
+    function (tick, colors, playerPosition, labPosition, fcolor)
+        local r = distance(playerPosition, labPosition)
+        local t = cos((r+tick/5)/2) * 0.5 + 0.5
+        local index1 = floor(t)
+        local index2 = index1 + 1
+        local color1 = colors[index1 % #colors + 1]
+        local color2 = colors[index2 % #colors + 1]
+        local _, x = modf(t)
+        lerpColor(x, color1, color2, fcolor)
+    end,
+    function (tick, colors, playerPosition, labPosition, fcolor)
+        local theta = atan2(labPosition.y - playerPosition.y, labPosition.x - playerPosition.x)
+        local t = (theta*0.5/pi + 0.5 + tick/120)*#colors
+        local index1 = floor(t)
+        local index2 = index1 + 1
+        local color1 = colors[index1 % #colors + 1]
+        local color2 = colors[index2 % #colors + 1]
+        local _, x = modf(t)
+        x = min(x*2, 1)
+        lerpColor(x, color1, color2, fcolor)
+    end,
+    function (tick, colors, playerPosition, labPosition, fcolor)
+        local t = abs(labPosition.x - playerPosition.x)/10 + tick/40
+        local index1 = floor(t)
+        local index2 = index1 + 1
+        local color1 = colors[index1 % #colors + 1]
+        local color2 = colors[index2 % #colors + 1]
+        local _, x = modf(t)
+        x = min(x*2, 1)
+        lerpColor(x, color1, color2, fcolor)
+    end,
+    function (tick, colors, playerPosition, labPosition, fcolor)
+        local t = abs(labPosition.y - playerPosition.y)/10 + tick/40
+        local index1 = floor(t)
+        local index2 = index1 + 1
+        local color1 = colors[index1 % #colors + 1]
+        local color2 = colors[index2 % #colors + 1]
+        local _, x = modf(t)
+        x = min(x*2, 1)
+        lerpColor(x, color1, color2, fcolor)
+    end,
+}
+
+local colorForLab = colorFunctions[1]
+local lastColorFunc = 1
+
+script.on_nth_tick(
+    60,
+    function (event)
+        local newColorFunc = random(1, #colorFunctions - 1)
+        if newColorFunc >= lastColorFunc then
+            newColorFunc = newColorFunc + 1
+        end
+        colorForLab = colorFunctions[newColorFunc]
+        lastColorFunc = newColorFunc
+    end
+)
+
 script.on_event(
     {defines.events.on_tick},
     function (event)
+        local bouncingTick = abs(event.tick%120 - 60)
         local oddness = event.tick % 5
         local fcolor = {r=0, g=0, b=0, a=0}
         for name, force in pairs(game.forces) do
             if labsByForce[force.index] then
                 local colors = getColorsForResearch(force.current_research)
+                local playerPosition = {x = 0, y = 0}
+                if force.players[1] then
+                    playerPosition = force.players[1].position
+                end
                 for index, lab in pairs(labsByForce[force.index]) do
                     if index % 5 == oddness then
                         if not lab.valid then
@@ -245,14 +317,7 @@ script.on_event(
                                 set_visible(animation, true)
                                 set_visible(light, true)
                             end
-                            local t = event.tick + unitNumber
-                            local index1 = floor(t/60.0)
-                            local index2 = index1 + 1
-                            local color1 = colors[index1 % #colors + 1]
-                            local color2 = colors[index2 % #colors + 1]
-                            local dummy, x = modf(t/60.0)
-                            x = min(x*5, 1)
-                            lerpColor(x, color1, color2, fcolor)
+                            colorForLab(bouncingTick, colors, playerPosition, lab.position, fcolor)
                             set_color(animation, fcolor)
                             set_color(light, fcolor)
                         else
