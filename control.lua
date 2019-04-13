@@ -5,16 +5,10 @@ local destroy = rendering.destroy
 local working = defines.entity_status.working
 local low_power = defines.entity_status.low_power
 local floor = math.floor
-local modf = math.modf
-local min = math.min
-local cos = math.cos
-local atan2 = math.atan2
-local abs = math.abs
-local pi = math.pi
 local random = math.random
 
-local math2d = require("math2d")
-local distance = math2d.position.distance
+local colorMath = require("utils.colorMath")
+local colorFunctions = colorMath.colorFunctions
 
 local labsByForce
 local labAnimations
@@ -47,44 +41,6 @@ local loadIngredientColors = function ()
         index = index + 1
     end
 end
-
-local lerpColor = function (x, a, b, out)
-    out.r = a.r + (b.r - a.r) * x
-    out.g = a.g + (b.g - a.g) * x
-    out.b = a.b + (b.b - a.b) * x
-end
-
-local loopInterpolate = function (t, colors, blendHardness, output)
-    t = t * #colors
-    local index1 = floor(t)
-    local index2 = index1 + 1
-    local color1 = colors[index1 % #colors + 1]
-    local color2 = colors[index2 % #colors + 1]
-    local _, x = modf(t)
-    x = min(x*blendHardness, 1)
-    lerpColor(x, color1, color2, output)
-end
-
-local colorFunctions = {
-    function (tick, colors, playerPosition, labPosition, fcolor)
-        local r = distance(playerPosition, labPosition)
-        local t = r/50 + tick/120
-        loopInterpolate(t, colors, 1, fcolor)
-    end,
-    function (tick, colors, playerPosition, labPosition, fcolor)
-        local theta = atan2(labPosition.y - playerPosition.y, labPosition.x - playerPosition.x)
-        local t = theta*0.5/pi + 0.5 + tick/120
-        loopInterpolate(t, colors, 2, fcolor)
-    end,
-    function (tick, colors, playerPosition, labPosition, fcolor)
-        local t = abs(labPosition.x - playerPosition.x)/90 + tick/120
-        loopInterpolate(t, colors, 2, fcolor)
-    end,
-    function (tick, colors, playerPosition, labPosition, fcolor)
-        local t = abs(labPosition.y - playerPosition.y)/90 + tick/120
-        loopInterpolate(t, colors, 2, fcolor)
-    end,
-}
 
 local createData = function ()
     global.labsByForce = {}
