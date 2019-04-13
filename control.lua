@@ -305,7 +305,6 @@ script.on_event(
     {defines.events.on_tick},
     function (event)
         scalarState.meanderingTick = scalarState.meanderingTick + scalarState.direction
-        log(scalarState.meanderingTick)
         local oddness = event.tick % 5
         local fcolor = {r=0, g=0, b=0, a=0}
         for name, force in pairs(game.forces) do
