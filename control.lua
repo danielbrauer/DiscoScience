@@ -26,6 +26,13 @@ local ingredientColors
 local unrecognizedColor = {r = 1.0, g = 0.0, b = 1.0}
 local defaultColors = {unrecognizedColor}
 
+local scalarState
+local defaultScalarState = {
+    lastColorFunc = 1,
+    direction = 1,
+    meanderingTick = 0,
+}
+
 local loadIngredientColors = function ()
     global.ingredientColors = {["unrecognized"] = unrecognizedColor}
     ingredientColors = global.ingredientColors
@@ -41,6 +48,57 @@ local loadIngredientColors = function ()
     end
 end
 
+local lerpColor = function (x, a, b, out)
+    out.r = a.r + (b.r - a.r) * x
+    out.g = a.g + (b.g - a.g) * x
+    out.b = a.b + (b.b - a.b) * x
+end
+
+local colorFunctions = {
+    function (tick, colors, playerPosition, labPosition, fcolor)
+        local r = distance(playerPosition, labPosition)
+        local t = (cos((r+tick)/20) * 0.5 + 0.5)*#colors
+        local index1 = floor(t)
+        local index2 = index1 + 1
+        local color1 = colors[index1 % #colors + 1]
+        local color2 = colors[index2 % #colors + 1]
+        local _, x = modf(t)
+        lerpColor(x, color1, color2, fcolor)
+    end,
+    function (tick, colors, playerPosition, labPosition, fcolor)
+        local theta = atan2(labPosition.y - playerPosition.y, labPosition.x - playerPosition.x)
+        local t = theta*0.5/pi + 0.5 + tick/120
+        t = t * #colors
+        local index1 = floor(t)
+        local index2 = index1 + 1
+        local color1 = colors[index1 % #colors + 1]
+        local color2 = colors[index2 % #colors + 1]
+        local _, x = modf(t)
+        x = min(x*2, 1)
+        lerpColor(x, color1, color2, fcolor)
+    end,
+    function (tick, colors, playerPosition, labPosition, fcolor)
+        local t = abs(labPosition.x - playerPosition.x)/10 + tick/40
+        local index1 = floor(t)
+        local index2 = index1 + 1
+        local color1 = colors[index1 % #colors + 1]
+        local color2 = colors[index2 % #colors + 1]
+        local _, x = modf(t)
+        x = min(x*2, 1)
+        lerpColor(x, color1, color2, fcolor)
+    end,
+    function (tick, colors, playerPosition, labPosition, fcolor)
+        local t = abs(labPosition.y - playerPosition.y)/10 + tick/40
+        local index1 = floor(t)
+        local index2 = index1 + 1
+        local color1 = colors[index1 % #colors + 1]
+        local color2 = colors[index2 % #colors + 1]
+        local _, x = modf(t)
+        x = min(x*2, 1)
+        lerpColor(x, color1, color2, fcolor)
+    end,
+}
+
 local createData = function ()
     global.labsByForce = {}
     global.labAnimations = {}
@@ -48,6 +106,8 @@ local createData = function ()
 
     global.researchColors = {}
     global.ingredientColors = {}
+
+    global.scalarState = defaultScalarState
 end
 
 local linkData = function ()
@@ -57,6 +117,11 @@ local linkData = function ()
 
     researchColors = global.researchColors
     ingredientColors = global.ingredientColors
+
+    scalarState = global.scalarState
+    if scalarState then
+        colorForLab = colorFunctions[scalarState.lastColorFunc]
+    end
 end
 
 local addLab = function (entity)
@@ -103,9 +168,15 @@ local reloadLabs = function ()
     end
 end
 
-local resetResearchColors = function ()
+local resetConfigDependents = function ()
     global.researchColors = {}
     researchColors = global.researchColors
+
+    global.scalarState = defaultScalarState
+    scalarState = global.scalarState
+    scalarState.meanderingTick = game.tick
+    
+    colorForLab = colorFunctions[scalarState.lastColorFunc]
 end
 
 script.on_init(
@@ -125,8 +196,8 @@ script.on_load(
 
 script.on_configuration_changed(
     function ()
+        resetConfigDependents()
         reloadLabs()
-        resetResearchColors()
         loadIngredientColors()
     end
 )
@@ -224,75 +295,30 @@ script.on_event(
     end
 )
 
-local lerpColor = function (x, a, b, out)
-    out.r = a.r + (b.r - a.r) * x
-    out.g = a.g + (b.g - a.g) * x
-    out.b = a.b + (b.b - a.b) * x
-end
-
-local colorFunctions = {
-    function (tick, colors, playerPosition, labPosition, fcolor)
-        local r = distance(playerPosition, labPosition)
-        local t = cos((r+tick/5)/2) * 0.5 + 0.5
-        local index1 = floor(t)
-        local index2 = index1 + 1
-        local color1 = colors[index1 % #colors + 1]
-        local color2 = colors[index2 % #colors + 1]
-        local _, x = modf(t)
-        lerpColor(x, color1, color2, fcolor)
-    end,
-    function (tick, colors, playerPosition, labPosition, fcolor)
-        local theta = atan2(labPosition.y - playerPosition.y, labPosition.x - playerPosition.x)
-        local t = (theta*0.5/pi + 0.5 + tick/120)*#colors
-        local index1 = floor(t)
-        local index2 = index1 + 1
-        local color1 = colors[index1 % #colors + 1]
-        local color2 = colors[index2 % #colors + 1]
-        local _, x = modf(t)
-        x = min(x*2, 1)
-        lerpColor(x, color1, color2, fcolor)
-    end,
-    function (tick, colors, playerPosition, labPosition, fcolor)
-        local t = abs(labPosition.x - playerPosition.x)/10 + tick/40
-        local index1 = floor(t)
-        local index2 = index1 + 1
-        local color1 = colors[index1 % #colors + 1]
-        local color2 = colors[index2 % #colors + 1]
-        local _, x = modf(t)
-        x = min(x*2, 1)
-        lerpColor(x, color1, color2, fcolor)
-    end,
-    function (tick, colors, playerPosition, labPosition, fcolor)
-        local t = abs(labPosition.y - playerPosition.y)/10 + tick/40
-        local index1 = floor(t)
-        local index2 = index1 + 1
-        local color1 = colors[index1 % #colors + 1]
-        local color2 = colors[index2 % #colors + 1]
-        local _, x = modf(t)
-        x = min(x*2, 1)
-        lerpColor(x, color1, color2, fcolor)
-    end,
-}
-
-local colorForLab = colorFunctions[1]
-local lastColorFunc = 1
-
 script.on_nth_tick(
     60,
     function (event)
-        local newColorFunc = random(1, #colorFunctions - 1)
-        if newColorFunc >= lastColorFunc then
-            newColorFunc = newColorFunc + 1
+        if #colorFunctions > 1 then
+            local newColorFunc = random(1, #colorFunctions - 1)
+            if newColorFunc >= scalarState.lastColorFunc then
+                newColorFunc = newColorFunc + 1
+            end
+            colorForLab = colorFunctions[newColorFunc]
+            scalarState.lastColorFunc = newColorFunc
         end
-        colorForLab = colorFunctions[newColorFunc]
-        lastColorFunc = newColorFunc
+        if scalarState.meanderingTick > 0 then
+            scalarState.direction = floor(random()*1.999)*2 - 1
+        else
+            scalarState.direction = 1
+        end
     end
 )
 
 script.on_event(
     {defines.events.on_tick},
     function (event)
-        local bouncingTick = abs(event.tick%120 - 60)
+        scalarState.meanderingTick = scalarState.meanderingTick + scalarState.direction
+        log(scalarState.meanderingTick)
         local oddness = event.tick % 5
         local fcolor = {r=0, g=0, b=0, a=0}
         for name, force in pairs(game.forces) do
@@ -317,7 +343,7 @@ script.on_event(
                                 set_visible(animation, true)
                                 set_visible(light, true)
                             end
-                            colorForLab(bouncingTick, colors, playerPosition, lab.position, fcolor)
+                            colorForLab(scalarState.meanderingTick, colors, playerPosition, lab.position, fcolor)
                             set_color(animation, fcolor)
                             set_color(light, fcolor)
                         else
