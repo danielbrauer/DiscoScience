@@ -54,48 +54,35 @@ local lerpColor = function (x, a, b, out)
     out.b = a.b + (b.b - a.b) * x
 end
 
+local loopInterpolate = function (t, colors, blendHardness, output)
+    t = t * #colors
+    local index1 = floor(t)
+    local index2 = index1 + 1
+    local color1 = colors[index1 % #colors + 1]
+    local color2 = colors[index2 % #colors + 1]
+    local _, x = modf(t)
+    x = min(x*blendHardness, 1)
+    lerpColor(x, color1, color2, output)
+end
+
 local colorFunctions = {
     function (tick, colors, playerPosition, labPosition, fcolor)
         local r = distance(playerPosition, labPosition)
-        local t = (cos((r+tick)/20) * 0.5 + 0.5)*#colors
-        local index1 = floor(t)
-        local index2 = index1 + 1
-        local color1 = colors[index1 % #colors + 1]
-        local color2 = colors[index2 % #colors + 1]
-        local _, x = modf(t)
-        lerpColor(x, color1, color2, fcolor)
+        local t = cos((r+tick)/20) * 0.5 + 0.5
+        loopInterpolate(t, colors, 1, fcolor)
     end,
     function (tick, colors, playerPosition, labPosition, fcolor)
         local theta = atan2(labPosition.y - playerPosition.y, labPosition.x - playerPosition.x)
         local t = theta*0.5/pi + 0.5 + tick/120
-        t = t * #colors
-        local index1 = floor(t)
-        local index2 = index1 + 1
-        local color1 = colors[index1 % #colors + 1]
-        local color2 = colors[index2 % #colors + 1]
-        local _, x = modf(t)
-        x = min(x*2, 1)
-        lerpColor(x, color1, color2, fcolor)
+        loopInterpolate(t, colors, 2, fcolor)
     end,
     function (tick, colors, playerPosition, labPosition, fcolor)
-        local t = abs(labPosition.x - playerPosition.x)/10 + tick/40
-        local index1 = floor(t)
-        local index2 = index1 + 1
-        local color1 = colors[index1 % #colors + 1]
-        local color2 = colors[index2 % #colors + 1]
-        local _, x = modf(t)
-        x = min(x*2, 1)
-        lerpColor(x, color1, color2, fcolor)
+        local t = abs(labPosition.x - playerPosition.x)/90 + tick/120
+        loopInterpolate(t, colors, 2, fcolor)
     end,
     function (tick, colors, playerPosition, labPosition, fcolor)
-        local t = abs(labPosition.y - playerPosition.y)/10 + tick/40
-        local index1 = floor(t)
-        local index2 = index1 + 1
-        local color1 = colors[index1 % #colors + 1]
-        local color2 = colors[index2 % #colors + 1]
-        local _, x = modf(t)
-        x = min(x*2, 1)
-        lerpColor(x, color1, color2, fcolor)
+        local t = abs(labPosition.y - playerPosition.y)/90 + tick/120
+        loopInterpolate(t, colors, 2, fcolor)
     end,
 }
 
