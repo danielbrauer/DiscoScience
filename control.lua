@@ -63,7 +63,7 @@ local linkData = function ()
 
     scalarState = global.scalarState
     if scalarState then
-        colorForLab = colorFunctions[scalarState.lastColorFunc]
+        colorForLab = colorFunctions[scalarState.lastColorFunc % #colorFunctions + 1]
     end
 end
 
