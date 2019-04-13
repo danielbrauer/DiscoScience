@@ -68,7 +68,7 @@ end
 local colorFunctions = {
     function (tick, colors, playerPosition, labPosition, fcolor)
         local r = distance(playerPosition, labPosition)
-        local t = cos((r+tick)/20) * 0.5 + 0.5
+        local t = r/50 + tick/120
         loopInterpolate(t, colors, 1, fcolor)
     end,
     function (tick, colors, playerPosition, labPosition, fcolor)
@@ -301,11 +301,13 @@ script.on_nth_tick(
     end
 )
 
+local stride = 6
+
 script.on_event(
     {defines.events.on_tick},
     function (event)
         scalarState.meanderingTick = scalarState.meanderingTick + scalarState.direction
-        local oddness = event.tick % 5
+        local offset = event.tick % stride
         local fcolor = {r=0, g=0, b=0, a=0}
         for name, force in pairs(game.forces) do
             if labsByForce[force.index] then
@@ -315,7 +317,7 @@ script.on_event(
                     playerPosition = force.players[1].position
                 end
                 for index, lab in pairs(labsByForce[force.index]) do
-                    if index % 5 == oddness then
+                    if index % stride == offset then
                         if not lab.valid then
                             showModError("errors.registered-lab-deleted")
                             reloadLabs()
