@@ -19,7 +19,6 @@ function colorMath.lerpColor(x, a, b, out)
 end
 
 function colorMath.loopInterpolate(t, colors, blendHardness, output)
-    t = t * #colors
     local index1 = floor(t)
     local index2 = index1 + 1
     local color1 = colors[index1 % #colors + 1]
@@ -32,20 +31,20 @@ end
 colorMath.colorFunctions = {
     function (tick, colors, playerPosition, labPosition, fcolor)
         local r = distance(playerPosition, labPosition)
-        local t = r/50 + tick/120
+        local t = r/8 + tick/40
         colorMath.loopInterpolate(t, colors, 1, fcolor)
     end,
     function (tick, colors, playerPosition, labPosition, fcolor)
         local theta = atan2(labPosition.y - playerPosition.y, labPosition.x - playerPosition.x)
-        local t = theta*0.5/pi + 0.5 + tick/120
+        local t = (theta*0.5/pi + 0.5)* #colors + tick/30
         colorMath.loopInterpolate(t, colors, 2, fcolor)
     end,
     function (tick, colors, playerPosition, labPosition, fcolor)
-        local t = abs(labPosition.x - playerPosition.x)/90 + tick/120
+        local t = abs(labPosition.x - playerPosition.x)/10 + tick/30
         colorMath.loopInterpolate(t, colors, 2, fcolor)
     end,
     function (tick, colors, playerPosition, labPosition, fcolor)
-        local t = abs(labPosition.y - playerPosition.y)/90 + tick/120
+        local t = abs(labPosition.y - playerPosition.y)/10 + tick/30
         colorMath.loopInterpolate(t, colors, 2, fcolor)
     end,
 }
