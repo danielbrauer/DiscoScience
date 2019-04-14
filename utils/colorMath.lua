@@ -32,7 +32,7 @@ colorMath.colorFunctions = {
     function (tick, colors, playerPosition, labPosition, fcolor)
         local r = distance(playerPosition, labPosition)
         local t = r/8 + tick/40
-        colorMath.loopInterpolate(t, colors, 1, fcolor)
+        colorMath.loopInterpolate(t, colors, 1.5, fcolor)
     end,
     function (tick, colors, playerPosition, labPosition, fcolor)
         local theta = atan2(labPosition.y - playerPosition.y, labPosition.x - playerPosition.x)

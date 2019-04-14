@@ -10,6 +10,17 @@ local random = math.random
 local colorMath = require("utils.colorMath")
 local colorFunctions = colorMath.colorFunctions
 
+local haveShownError = false
+
+local showModError = function (message)
+    if not haveShownError then
+        game.show_message_dialog{text = {"", {message}, {"errors.please-report"}}}
+        haveShownError = true
+    end
+end
+
+-- global state
+
 local labsByForce
 local labAnimations
 local labLights
@@ -17,10 +28,15 @@ local labLights
 local researchColors
 local ingredientColors
 
+local scalarState
+
+-- constants
+
 local unrecognizedColor = {r = 1.0, g = 0.0, b = 1.0}
 local defaultColors = {unrecognizedColor}
 
-local scalarState
+local stride = 6
+
 local defaultScalarState = {
     lastColorFunc = 1,
     direction = 1,
@@ -145,15 +161,6 @@ script.on_configuration_changed(
     end
 )
 
-local haveShownError = false
-
-local showModError = function (message)
-    if not haveShownError then
-        game.show_message_dialog{text = {"", {message}, {"errors.please-report"}}}
-        haveShownError = true
-    end
-end
-
 local getColorsForResearch = function (tech)
     if not tech then
         return defaultColors
@@ -256,8 +263,6 @@ script.on_nth_tick(
         end
     end
 )
-
-local stride = 6
 
 script.on_event(
     {defines.events.on_tick},
