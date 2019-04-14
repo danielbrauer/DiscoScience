@@ -19,6 +19,11 @@ local iconColors =
     ["__ScienceCostTweakerM__/graphics/bobmods/logistic-science-pack.png"] = {r = 1.0, g = 0.0, b = 1.0},
     ["__ScienceCostTweakerM__/graphics/bobmods/gold-science-pack.png"] =     {r = 1.0, g = 1.0, b = 0.1},
     ["__ScienceCostTweakerM__/graphics/bobmods/alien-science-pack.png"] =    {r = 1.0, g = 0.0, b = 0.6},
+    ["__pycoalprocessing__/graphics/icons/science-pack-1.png"] =             {r = 1.0, g = 0.12,b = 0.18},
+    ["__pycoalprocessing__/graphics/icons/science-pack-2.png"] =             {r = 0.16,g = 0.5, b = 0.0},
+    ["__pycoalprocessing__/graphics/icons/science-pack-3.png"] =             {r = 0.35,g = 0.64,b = 0.84},
+    ["__pyfusionenergy__/graphics/icons/production-science-pack.png"] =      {r = 0.66,g = 1.0, b = 0.33},
+    ["__pyhightech__/graphics/icons/high-tech-science-pack.png"] =           {r = 0.91,g = 0.86,b = 0.24},
 }
 local ingredientColors = {}
 local missing = {}
