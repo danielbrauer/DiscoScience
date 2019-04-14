@@ -6,6 +6,7 @@ local working = defines.entity_status.working
 local low_power = defines.entity_status.low_power
 local floor = math.floor
 local random = math.random
+local max = math.max
 
 local colorMath = require("utils.colorMath")
 local colorFunctions = colorMath.colorFunctions
@@ -267,7 +268,7 @@ script.on_nth_tick(
 script.on_event(
     {defines.events.on_tick},
     function (event)
-        scalarState.meanderingTick = scalarState.meanderingTick + scalarState.direction
+        scalarState.meanderingTick = max(0, scalarState.meanderingTick + scalarState.direction)
         local offset = event.tick % stride
         local fcolor = {r=0, g=0, b=0, a=0}
         for name, force in pairs(game.forces) do
