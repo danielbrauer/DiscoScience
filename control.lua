@@ -11,14 +11,7 @@ local max = math.max
 local colorMath = require("utils.colorMath")
 local colorFunctions = colorMath.colorFunctions
 
-local haveShownError = false
-
-local showModError = function (message)
-    if not haveShownError then
-        game.show_message_dialog{text = {"", {message}, {"errors.please-report"}}}
-        haveShownError = true
-    end
-end
+local softErrorReporting = require("utils.softErrorReporting")
 
 -- global state
 
@@ -86,7 +79,7 @@ end
 
 local addLab = function (entity)
     if not entity or not entity.valid then
-        showModError("errors.unregistered-entity-created")
+        softErrorReporting.showModError("errors.unregistered-entity-created")
         return
     end
     if entity.type == "lab" then
@@ -94,7 +87,7 @@ local addLab = function (entity)
             labsByForce[entity.force.index] = {}
         end
         if labsByForce[entity.force.index][entity] then
-            showModError("errors.lab-registered-twice")
+            softErrorReporting.showModError("errors.lab-registered-twice")
             return
         end
         table.insert(labsByForce[entity.force.index], entity)
@@ -199,10 +192,10 @@ local removeLab = function (entity)
                 end
             end
             if not removed then
-                showModError("errors.unregistered-lab-deleted")
+                softErrorReporting.showModError("errors.unregistered-lab-deleted")
             end
         else
-            showModError("errors.unregistered-lab-deleted")
+            softErrorReporting.showModError("errors.unregistered-lab-deleted")
         end 
     end
 end
@@ -281,7 +274,7 @@ script.on_event(
                 for index, lab in pairs(labsByForce[force.index]) do
                     if index % stride == offset then
                         if not lab.valid then
-                            showModError("errors.registered-lab-deleted")
+                            softErrorReporting.showModError("errors.registered-lab-deleted")
                             reloadLabs()
                             return
                         end
