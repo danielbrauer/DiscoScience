@@ -2,6 +2,7 @@ local set_color = rendering.set_color
 local get_visible = rendering.get_visible
 local set_visible = rendering.set_visible
 local destroy = rendering.destroy
+local is_valid = rendering.is_valid
 local working = defines.entity_status.working
 local low_power = defines.entity_status.low_power
 local floor = math.floor
@@ -77,6 +78,27 @@ local linkData = function ()
     end
 end
 
+local createAnimation = function (entity)
+    labAnimations[entity.unit_number] = rendering.draw_animation({
+        animation = "discoscience/lab-storm",
+        surface = entity.surface,
+        target = entity,
+        render_layer = "higher-object-under",
+        animation_offset = floor(random()*300)
+    })
+end
+
+local createLight = function (entity)
+    labLights[entity.unit_number] = rendering.draw_light({
+        sprite = "utility/light_medium",
+        surface = entity.surface,
+        target = entity,
+        intensity = 0.75,
+        size = 8,
+        color = {r = 1.0, g = 1.0, b = 1.0}
+    })
+end
+
 local addLab = function (entity)
     if not entity or not entity.valid then
         softErrorReporting.showModError("errors.unregistered-entity-created")
@@ -86,29 +108,17 @@ local addLab = function (entity)
         if not labsByForce[entity.force.index] then
             labsByForce[entity.force.index] = {}
         end
-        if labsByForce[entity.force.index][entity] then
+        local labUnitNumber = entity.unit_number
+        if labsByForce[entity.force.index][labUnitNumber] then
             softErrorReporting.showModError("errors.lab-registered-twice")
             return
         end
-        table.insert(labsByForce[entity.force.index], entity)
-        if not labAnimations[entity.unit_number] then
-            labAnimations[entity.unit_number] = rendering.draw_animation({
-                animation = "discoscience/lab-storm",
-                surface = entity.surface,
-                target = entity,
-                render_layer = "higher-object-under",
-                animation_offset = floor(random()*300)
-            })
-            set_visible(labAnimations[entity.unit_number], false)
-            labLights[entity.unit_number] = rendering.draw_light({
-                sprite = "utility/light_medium",
-                surface = entity.surface,
-                target = entity,
-                intensity = 0.75,
-                size = 8,
-                color = {r = 1.0, g = 1.0, b = 1.0}
-            })
-            set_visible(labLights[entity.unit_number], false)
+        labsByForce[entity.force.index][labUnitNumber] = entity
+        if not labAnimations[labUnitNumber] then
+            createAnimation(entity)
+        end
+        if not labLights[labUnitNumber] then
+            createLight(entity)
         end
     end
 end
@@ -179,25 +189,33 @@ end
 
 local removeLab = function (entity)
     if entity.type == "lab" then
-        if labAnimations[entity.unit_number] then
-            labAnimations[entity.unit_number] = nil
-            labLights[entity.unit_number] = nil
-        end
+        local labUnitNumber = entity.unit_number
+        labAnimations[labUnitNumber] = nil
+        labLights[labUnitNumber] = nil
         if labsByForce[entity.force.index] then
             local removed = false
-            for index, lab in ipairs(labsByForce[entity.force.index]) do
-                if lab == entity then
-                    table.remove(labsByForce[entity.force.index], index)
-                    removed = true
-                end
-            end
-            if not removed then
+            if labsByForce[entity.force.index][labUnitNumber] then
+                labsByForce[entity.force.index][labUnitNumber] = nil
+            else
                 softErrorReporting.showModError("errors.unregistered-lab-deleted")
             end
         else
             softErrorReporting.showModError("errors.unregistered-lab-deleted")
         end 
     end
+end
+
+local getRenderObjects = function(entity)
+    local labUnitNumber = entity.unit_number
+    if not is_valid(labAnimations[labUnitNumber]) then
+        createAnimation(entity)
+        softErrorReporting.showModError("errors.render-object-destroyed")
+    end
+    if not is_valid(labLights[labUnitNumber]) then
+        createLight(entity)
+        softErrorReporting.showModError("errors.render-object-destroyed")
+    end
+    return labAnimations[labUnitNumber], labLights[labUnitNumber]
 end
 
 script.on_event(
@@ -278,9 +296,7 @@ script.on_event(
                             reloadLabs()
                             return
                         end
-                        local unitNumber = lab.unit_number;
-                        local animation = labAnimations[unitNumber]
-                        local light = labLights[unitNumber]
+                        local animation, light = getRenderObjects(lab)
                         if lab.status == working or lab.status == low_power then
                             if not get_visible(animation) then
                                 set_visible(animation, true)
