@@ -14,21 +14,19 @@ local colorFunctions = colorMath.colorFunctions
 
 local softErrorReporting = require("utils.softErrorReporting")
 
+local researchColor = require("core.researchColor")
+
 -- global state
 
 local labsByForce
 local labAnimations
 local labLights
 
-local researchColors
-local ingredientColors
+local researchColorData
 
 local scalarState
 
 -- constants
-
-local unrecognizedColor = {r = 1.0, g = 0.0, b = 1.0}
-local defaultColors = {unrecognizedColor}
 
 local stride = 6
 
@@ -38,28 +36,12 @@ local defaultScalarState = {
     meanderingTick = 0,
 }
 
-local loadIngredientColors = function ()
-    global.ingredientColors = {["unrecognized"] = unrecognizedColor}
-    ingredientColors = global.ingredientColors
-    local index = 1
-    while true do
-        local prototype = game.entity_prototypes["DiscoScience-colors-"..index]
-        if not prototype then break end
-        local pair = loadstring(prototype.order)
-        for name, color in pairs(pair()) do
-            ingredientColors[name] = color
-        end
-        index = index + 1
-    end
-end
-
 local createData = function ()
     global.labsByForce = {}
     global.labAnimations = {}
     global.labLights = {}
 
-    global.researchColors = {}
-    global.ingredientColors = {}
+    global.researchColorData = researchColor.defaultData
 
     global.scalarState = defaultScalarState
 end
@@ -69,8 +51,7 @@ local linkData = function ()
     labLights = global.labLights
     labsByForce = global.labsByForce
 
-    researchColors = global.researchColors
-    ingredientColors = global.ingredientColors
+    researchColor.init(global.researchColorData)
 
     scalarState = global.scalarState
     if scalarState then
@@ -132,8 +113,8 @@ local reloadLabs = function ()
 end
 
 local resetConfigDependents = function ()
-    global.researchColors = {}
-    researchColors = global.researchColors
+    global.researchColorData = researchColor.defaultData
+    researchColor.init(global.researchColorData)
 
     global.scalarState = defaultScalarState
     scalarState = global.scalarState
@@ -147,7 +128,7 @@ script.on_init(
         createData()
         linkData()
         reloadLabs()
-        loadIngredientColors()
+        researchColor.loadIngredientColors()
     end
 )
 
@@ -161,31 +142,9 @@ script.on_configuration_changed(
     function ()
         resetConfigDependents()
         reloadLabs()
-        loadIngredientColors()
+        researchColor.loadIngredientColors()
     end
 )
-
-local getColorsForResearch = function (tech)
-    if not tech then
-        return defaultColors
-    else
-        local techName = tech.prototype.name;
-        if not researchColors[techName] then
-            local colors = {}
-            for index, ingredient in pairs(tech.research_unit_ingredients) do
-                colors[index] = ingredientColors[ingredient.name]
-                if not colors[index] then
-                    colors[index] = ingredientColors.unrecognized
-                end
-            end
-            if #colors == 0 then
-                colors = defaultColors
-            end
-            researchColors[techName] = colors
-        end
-        return researchColors[techName]
-    end
-end
 
 local removeLab = function (entity)
     if entity.type == "lab" then
@@ -284,7 +243,7 @@ script.on_event(
         local fcolor = {r=0, g=0, b=0, a=0}
         for name, force in pairs(game.forces) do
             if labsByForce[force.index] then
-                local colors = getColorsForResearch(force.current_research)
+                local colors = researchColor.getColorsForResearch(force.current_research)
                 local playerPosition = {x = 0, y = 0}
                 if force.players[1] then
                     playerPosition = force.players[1].position
