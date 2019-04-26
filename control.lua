@@ -22,8 +22,6 @@ local labsByForce
 local labAnimations
 local labLights
 
-local researchColorData
-
 local scalarState
 
 -- constants
