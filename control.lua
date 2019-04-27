@@ -9,18 +9,17 @@ local floor = math.floor
 local random = math.random
 local max = math.max
 
+require("utils.softErrorReporting")
+
 local colorMath = require("utils.colorMath")
 local colorFunctions = colorMath.colorFunctions
 
-local softErrorReporting = require("utils.softErrorReporting")
-
 local researchColor = require("core.researchColor")
+local labRenderers = require("core.labRenderers")
 
 -- global state
 
-local labsByForce
-local labAnimations
-local labLights
+local labRendererData
 
 local scalarState
 
@@ -35,9 +34,7 @@ local defaultScalarState = {
 }
 
 local createData = function ()
-    global.labsByForce = {}
-    global.labAnimations = {}
-    global.labLights = {}
+    global.labRendererData = labRenderers.defaultData
 
     global.researchColorData = researchColor.defaultData
 
@@ -45,9 +42,7 @@ local createData = function ()
 end
 
 local linkData = function ()
-    labAnimations = global.labAnimations
-    labLights = global.labLights
-    labsByForce = global.labsByForce
+    labRendererData = labRenderers.init(global.labRendererData)
 
     researchColor.init(global.researchColorData)
 
@@ -57,62 +52,20 @@ local linkData = function ()
     end
 end
 
-local createAnimation = function (entity)
-    labAnimations[entity.unit_number] = rendering.draw_animation({
-        animation = "discoscience/lab-storm",
-        surface = entity.surface,
-        target = entity,
-        render_layer = "higher-object-under",
-        animation_offset = floor(random()*300)
-    })
-end
-
-local createLight = function (entity)
-    labLights[entity.unit_number] = rendering.draw_light({
-        sprite = "utility/light_medium",
-        surface = entity.surface,
-        target = entity,
-        intensity = 0.75,
-        size = 8,
-        color = {r = 1.0, g = 1.0, b = 1.0}
-    })
-end
-
-local addLab = function (entity)
-    if not entity or not entity.valid then
-        softErrorReporting.showModError("errors.unregistered-entity-created")
-        return
-    end
-    if entity.type == "lab" then
-        if not labsByForce[entity.force.index] then
-            labsByForce[entity.force.index] = {}
-        end
-        local labUnitNumber = entity.unit_number
-        if labsByForce[entity.force.index][labUnitNumber] then
-            softErrorReporting.showModError("errors.lab-registered-twice")
-            return
-        end
-        labsByForce[entity.force.index][labUnitNumber] = entity
-        if not labAnimations[labUnitNumber] then
-            createAnimation(entity)
-        end
-        if not labLights[labUnitNumber] then
-            createLight(entity)
-        end
-    end
-end
-
-local reloadLabs = function ()
-    global.labsByForce = {}
-    labsByForce = global.labsByForce
-    for index, lab in ipairs(game.surfaces[1].find_entities_filtered({type = "lab"})) do
-        addLab(lab)
-    end
-end
-
 local resetConfigDependents = function ()
-    global.researchColorData = researchColor.defaultData
-    researchColor.init(global.researchColorData)
+    if global.labsByForce then -- Update from old, separate tables
+        labRendererData = {
+            labsByForce = {},
+            labAnimations = global.labAnimations or {},
+            labLights = global.labLights or {},
+        }
+        global.labRendererData = labRenderers.init(labRendererData)
+        global.labsByForce = nil
+        global.labAnimations = nil
+        global.labLights = nil
+    end
+        
+    global.researchColorData = researchColor.init(researchColor.defaultData)
 
     global.scalarState = defaultScalarState
     scalarState = global.scalarState
@@ -125,7 +78,7 @@ script.on_init(
     function ()
         createData()
         linkData()
-        reloadLabs()
+        labRenderers.reloadLabs()
         researchColor.loadIngredientColors()
     end
 )
@@ -139,41 +92,10 @@ script.on_load(
 script.on_configuration_changed(
     function ()
         resetConfigDependents()
-        reloadLabs()
+        labRenderers.reloadLabs()
         researchColor.loadIngredientColors()
     end
 )
-
-local removeLab = function (entity)
-    if entity.type == "lab" then
-        local labUnitNumber = entity.unit_number
-        labAnimations[labUnitNumber] = nil
-        labLights[labUnitNumber] = nil
-        if labsByForce[entity.force.index] then
-            local removed = false
-            if labsByForce[entity.force.index][labUnitNumber] then
-                labsByForce[entity.force.index][labUnitNumber] = nil
-            else
-                softErrorReporting.showModError("errors.unregistered-lab-deleted")
-            end
-        else
-            softErrorReporting.showModError("errors.unregistered-lab-deleted")
-        end 
-    end
-end
-
-local getRenderObjects = function(entity)
-    local labUnitNumber = entity.unit_number
-    if not is_valid(labAnimations[labUnitNumber]) then
-        createAnimation(entity)
-        softErrorReporting.showModError("errors.render-object-destroyed")
-    end
-    if not is_valid(labLights[labUnitNumber]) then
-        createLight(entity)
-        softErrorReporting.showModError("errors.render-object-destroyed")
-    end
-    return labAnimations[labUnitNumber], labLights[labUnitNumber]
-end
 
 script.on_event(
     {
@@ -181,7 +103,7 @@ script.on_event(
         defines.events.on_robot_built_entity
     },
     function (event)
-        addLab(event.created_entity)
+        labRenderers.addLab(event.created_entity)
     end
 )
 
@@ -191,7 +113,7 @@ script.on_event(
         defines.events.script_raised_revive
     },
     function (event)
-        addLab(event.entity)
+        labRenderers.addLab(event.entity)
     end
 )
 
@@ -203,14 +125,14 @@ script.on_event(
         defines.events.script_raised_destroy
     },
     function (event)
-        removeLab(event.entity)
+        labRenderers.removeLab(event.entity)
     end
 )
 
 script.on_event(
     {defines.events.on_forces_merged},
     function (event)
-        reloadLabs()
+        labRenderers.reloadLabs()
     end
 )
 
@@ -240,20 +162,21 @@ script.on_event(
         local offset = event.tick % stride
         local fcolor = {r=0, g=0, b=0, a=0}
         for name, force in pairs(game.forces) do
-            if labsByForce[force.index] then
+            local labsForForce = labRendererData.labsByForce[force.index]
+            if labsForForce then
                 local colors = researchColor.getColorsForResearch(force.current_research)
                 local playerPosition = {x = 0, y = 0}
                 if force.players[1] then
                     playerPosition = force.players[1].position
                 end
-                for index, lab in pairs(labsByForce[force.index]) do
+                for index, lab in pairs(labsForForce) do
                     if index % stride == offset then
                         if not lab.valid then
                             softErrorReporting.showModError("errors.registered-lab-deleted")
-                            reloadLabs()
+                            labRenderers.reloadLabs()
                             return
                         end
-                        local animation, light = getRenderObjects(lab)
+                        local animation, light = labRenderers.getRenderObjects(lab)
                         if lab.status == working or lab.status == low_power then
                             if not get_visible(animation) then
                                 set_visible(animation, true)

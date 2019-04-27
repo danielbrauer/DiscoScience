@@ -7,11 +7,12 @@ researchColor.colorData = {}
 
 researchColor.init = function (data)
     researchColor.colorData = data
+    return data
 end
 
 researchColor.defaultData = {
     researchColors = {},
-    ingredientColors = {}
+    ingredientColors = {},
 }
 
 researchColor.loadIngredientColors = function ()
