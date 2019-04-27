@@ -6,21 +6,23 @@ local is_valid = rendering.is_valid
 local floor = math.floor
 local random = math.random
 
-labRenderers.data = {}
+-- state
 
-labRenderers.init = function (data)
-    labRenderers.data = data
-    return data
+labRenderers.state = nil
+
+labRenderers.init = function (state)
+    labRenderers.state = state
+    return state
 end
 
-labRenderers.defaultData = {
+labRenderers.initialState = {
     labsByForce = {},
     labAnimations = {},
     labLights = {},
 }
 
 labRenderers.createAnimation = function (entity)
-    labRenderers.data.labAnimations[entity.unit_number] = draw_animation({
+    labRenderers.state.labAnimations[entity.unit_number] = draw_animation({
         animation = "discoscience/lab-storm",
         surface = entity.surface,
         target = entity,
@@ -30,7 +32,7 @@ labRenderers.createAnimation = function (entity)
 end
 
 labRenderers.createLight = function (entity)
-    labRenderers.data.labLights[entity.unit_number] = draw_light({
+    labRenderers.state.labLights[entity.unit_number] = draw_light({
         sprite = "utility/light_medium",
         surface = entity.surface,
         target = entity,
@@ -46,26 +48,26 @@ labRenderers.addLab = function (entity)
         return
     end
     if entity.type == "lab" then
-        if not labRenderers.data.labsByForce[entity.force.index] then
-            labRenderers.data.labsByForce[entity.force.index] = {}
+        if not labRenderers.state.labsByForce[entity.force.index] then
+            labRenderers.state.labsByForce[entity.force.index] = {}
         end
         local labUnitNumber = entity.unit_number
-        if labRenderers.data.labsByForce[entity.force.index][labUnitNumber] then
+        if labRenderers.state.labsByForce[entity.force.index][labUnitNumber] then
             softErrorReporting.showModError("errors.lab-registered-twice")
             return
         end
-        labRenderers.data.labsByForce[entity.force.index][labUnitNumber] = entity
-        if not labRenderers.data.labAnimations[labUnitNumber] then
+        labRenderers.state.labsByForce[entity.force.index][labUnitNumber] = entity
+        if not labRenderers.state.labAnimations[labUnitNumber] then
             labRenderers.createAnimation(entity)
         end
-        if not labRenderers.data.labLights[labUnitNumber] then
+        if not labRenderers.state.labLights[labUnitNumber] then
             labRenderers.createLight(entity)
         end
     end
 end
 
 labRenderers.reloadLabs = function ()
-    labRenderers.data.labsByForce = {}
+    labRenderers.state.labsByForce = {}
     for index, lab in ipairs(game.surfaces[1].find_entities_filtered({type = "lab"})) do
         labRenderers.addLab(lab)
     end
@@ -74,9 +76,9 @@ end
 labRenderers.removeLab = function (entity)
     if entity.type == "lab" then
         local labUnitNumber = entity.unit_number
-        labRenderers.data.labAnimations[labUnitNumber] = nil
-        labRenderers.data.labLights[labUnitNumber] = nil
-        local labsForForce = labRenderers.data.labsByForce[entity.force.index]
+        labRenderers.state.labAnimations[labUnitNumber] = nil
+        labRenderers.state.labLights[labUnitNumber] = nil
+        local labsForForce = labRenderers.state.labsByForce[entity.force.index]
         if labsForForce then
             if labsForForce[labUnitNumber] then
                 labsForForce[labUnitNumber] = nil
@@ -89,17 +91,21 @@ labRenderers.removeLab = function (entity)
     end
 end
 
+labRenderers.labsForForce = function (forceIndex)
+    return labRenderers.state.labsByForce[forceIndex]
+end
+
 labRenderers.getRenderObjects = function(entity)
     local labUnitNumber = entity.unit_number
-    if not is_valid(labRenderers.data.labAnimations[labUnitNumber]) then
+    if not is_valid(labRenderers.state.labAnimations[labUnitNumber]) then
         labRenderers.createAnimation(entity)
         softErrorReporting.showModError("errors.render-object-destroyed")
     end
-    if not is_valid(labRenderers.data.labLights[labUnitNumber]) then
+    if not is_valid(labRenderers.state.labLights[labUnitNumber]) then
         labRenderers.createLight(entity)
         softErrorReporting.showModError("errors.render-object-destroyed")
     end
-    return labRenderers.data.labAnimations[labUnitNumber], labRenderers.data.labLights[labUnitNumber]
+    return labRenderers.state.labAnimations[labUnitNumber], labRenderers.state.labLights[labUnitNumber]
 end
 
 return labRenderers

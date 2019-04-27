@@ -1,29 +1,33 @@
 local researchColor = {}
 
+-- constants
+
 researchColor.unrecognizedColor = {r = 1.0, g = 0.0, b = 1.0}
 researchColor.defaultColors = {unrecognizedColor}
 
-researchColor.colorData = {}
+-- state
 
-researchColor.init = function (data)
-    researchColor.colorData = data
-    return data
+researchColor.state = {}
+
+researchColor.init = function (state)
+    researchColor.state = state
+    return state
 end
 
-researchColor.defaultData = {
+researchColor.initialState = {
     researchColors = {},
     ingredientColors = {},
 }
 
 researchColor.loadIngredientColors = function ()
-    researchColor.colorData.ingredientColors = {["unrecognized"] = researchColor.unrecognizedColor}
+    researchColor.state.ingredientColors = {["unrecognized"] = researchColor.unrecognizedColor}
     local index = 1
     while true do
         local prototype = game.entity_prototypes["DiscoScience-colors-"..index]
         if not prototype then break end
         local pair = loadstring(prototype.order)
         for name, color in pairs(pair()) do
-            researchColor.colorData.ingredientColors[name] = color
+            researchColor.state.ingredientColors[name] = color
         end
         index = index + 1
     end
@@ -34,20 +38,20 @@ researchColor.getColorsForResearch = function (tech)
         return defaultColors
     else
         local techName = tech.prototype.name;
-        if not researchColor.colorData.researchColors[techName] then
+        if not researchColor.state.researchColors[techName] then
             local colors = {}
             for index, ingredient in pairs(tech.research_unit_ingredients) do
-                colors[index] = researchColor.colorData.ingredientColors[ingredient.name]
+                colors[index] = researchColor.state.ingredientColors[ingredient.name]
                 if not colors[index] then
-                    colors[index] = researchColor.colorData.ingredientColors.unrecognized
+                    colors[index] = researchColor.state.ingredientColors.unrecognized
                 end
             end
             if #colors == 0 then
                 colors = defaultColors
             end
-            researchColor.colorData.researchColors[techName] = colors
+            researchColor.state.researchColors[techName] = colors
         end
-        return researchColor.colorData.researchColors[techName]
+        return researchColor.state.researchColors[techName]
     end
 end
 

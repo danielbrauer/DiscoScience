@@ -1,77 +1,51 @@
-local set_color = rendering.set_color
-local get_visible = rendering.get_visible
-local set_visible = rendering.set_visible
-local destroy = rendering.destroy
-local is_valid = rendering.is_valid
-local working = defines.entity_status.working
-local low_power = defines.entity_status.low_power
-local floor = math.floor
-local random = math.random
-local max = math.max
 
 require("utils.softErrorReporting")
 
-local colorMath = require("utils.colorMath")
-local colorFunctions = colorMath.colorFunctions
-
 local researchColor = require("core.researchColor")
 local labRenderers = require("core.labRenderers")
-
--- global state
-
-local labRendererData
-
-local scalarState
+local labColoring = require("core.labColoring")
 
 -- constants
 
-local stride = 6
-
-local defaultScalarState = {
-    lastColorFunc = 1,
-    direction = 1,
-    meanderingTick = 0,
-}
+local colorSwitchFrequency = 60
 
 local createData = function ()
-    global.labRendererData = labRenderers.defaultData
+    global.labRendererData = labRenderers.initialState
 
-    global.researchColorData = researchColor.defaultData
+    global.researchColorData = researchColor.initialState
 
-    global.scalarState = defaultScalarState
+    global.labColoringData = labColoring.initialState
 end
 
 local linkData = function ()
-    labRendererData = labRenderers.init(global.labRendererData)
+    labRenderers.init(global.labRendererData)
 
     researchColor.init(global.researchColorData)
 
-    scalarState = global.scalarState
-    if scalarState then
-        colorForLab = colorFunctions[scalarState.lastColorFunc % #colorFunctions + 1]
-    end
+    labColoring.init(global.labColoringData)
 end
 
 local resetConfigDependents = function ()
     if global.labsByForce then -- Update from old, separate tables
-        labRendererData = {
+        global.labRendererData = {
             labsByForce = {},
             labAnimations = global.labAnimations or {},
             labLights = global.labLights or {},
         }
-        global.labRendererData = labRenderers.init(labRendererData)
+        labRenderers.init(global.labRendererData)
         global.labsByForce = nil
         global.labAnimations = nil
         global.labLights = nil
     end
         
-    global.researchColorData = researchColor.init(researchColor.defaultData)
+    global.researchColorData = researchColor.init(researchColor.initialState)
 
-    global.scalarState = defaultScalarState
-    scalarState = global.scalarState
-    scalarState.meanderingTick = game.tick
-    
-    colorForLab = colorFunctions[scalarState.lastColorFunc]
+    if global.scalarState then -- Remove state from old location
+        global.scalarState = nil
+    end
+
+    global.labColoringData = labColoring.init(labColoring.initialState)
+    global.labColoringData.meanderingTick = colorSwitchFrequency -- to avoid going negative
 end
 
 script.on_init(
@@ -137,63 +111,15 @@ script.on_event(
 )
 
 script.on_nth_tick(
-    60,
+    colorSwitchFrequency,
     function (event)
-        if #colorFunctions > 1 then
-            local newColorFunc = random(1, #colorFunctions - 1)
-            if newColorFunc >= scalarState.lastColorFunc then
-                newColorFunc = newColorFunc + 1
-            end
-            colorForLab = colorFunctions[newColorFunc]
-            scalarState.lastColorFunc = newColorFunc
-        end
-        if scalarState.meanderingTick > 0 then
-            scalarState.direction = floor(random()*1.999)*2 - 1
-        else
-            scalarState.direction = 1
-        end
+        labColoring.switchPattern()
     end
 )
 
 script.on_event(
     {defines.events.on_tick},
     function (event)
-        scalarState.meanderingTick = max(0, scalarState.meanderingTick + scalarState.direction)
-        local offset = event.tick % stride
-        local fcolor = {r=0, g=0, b=0, a=0}
-        for name, force in pairs(game.forces) do
-            local labsForForce = labRendererData.labsByForce[force.index]
-            if labsForForce then
-                local colors = researchColor.getColorsForResearch(force.current_research)
-                local playerPosition = {x = 0, y = 0}
-                if force.players[1] then
-                    playerPosition = force.players[1].position
-                end
-                for index, lab in pairs(labsForForce) do
-                    if index % stride == offset then
-                        if not lab.valid then
-                            softErrorReporting.showModError("errors.registered-lab-deleted")
-                            labRenderers.reloadLabs()
-                            return
-                        end
-                        local animation, light = labRenderers.getRenderObjects(lab)
-                        if lab.status == working or lab.status == low_power then
-                            if not get_visible(animation) then
-                                set_visible(animation, true)
-                                set_visible(light, true)
-                            end
-                            colorForLab(scalarState.meanderingTick, colors, playerPosition, lab.position, fcolor)
-                            set_color(animation, fcolor)
-                            set_color(light, fcolor)
-                        else
-                            if get_visible(animation) then
-                                set_visible(animation, false)
-                                set_visible(light, false)
-                            end
-                        end
-                    end
-                end
-            end
-        end
+        labColoring.updateRenderers(event, labRenderers, researchColor)
     end
 )
