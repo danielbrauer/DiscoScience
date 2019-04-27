@@ -46,6 +46,14 @@ colorMath.colorFunctions = {
         local t = abs(labPosition.y - playerPosition.y)/10 + tick/30
         colorMath.loopInterpolate(t, colors, 2, fcolor)
     end,
+    function (tick, colors, playerPosition, labPosition, fcolor)
+        local t = abs(labPosition.x - playerPosition.x + labPosition.y - playerPosition.y)/10 + tick/30
+        colorMath.loopInterpolate(t, colors, 2, fcolor)
+    end,
+    function (tick, colors, playerPosition, labPosition, fcolor)
+        local t = abs(floor((labPosition.x - playerPosition.x)/9) + floor((labPosition.y - playerPosition.y)/8)) + tick/10
+        colorMath.loopInterpolate(t, colors, 5, fcolor)
+    end,
 }
 
 return colorMath
