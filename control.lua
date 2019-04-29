@@ -26,23 +26,22 @@ local linkData = function ()
 end
 
 local resetConfigDependents = function ()
-    if global.labsByForce then -- Update from old, separate tables
+    if global.labAnimations or global.labLights then -- Update from old, separate tables
         global.labRendererData = {
             labsByForce = {},
             labAnimations = global.labAnimations or {},
             labLights = global.labLights or {},
         }
         labRenderers.init(global.labRendererData)
-        global.labsByForce = nil
-        global.labAnimations = nil
-        global.labLights = nil
     end
         
     global.researchColorData = researchColor.init(researchColor.initialState)
 
-    if global.scalarState then -- Remove state from old location
-        global.scalarState = nil
-    end
+    -- Remove old data
+    global.scalarState = nil
+    global.labsByForce = nil
+    global.labAnimations = nil
+    global.labLights = nil
 
     global.labColoringData = labColoring.init(labColoring.initialState)
     global.labColoringData.meanderingTick = colorSwitchFrequency -- to avoid going negative
