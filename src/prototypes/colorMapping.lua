@@ -1,4 +1,6 @@
-local iconColors =
+local colorMapping = {}
+
+colorMapping.iconColors =
 {
     ["__base__/graphics/icons/automation-science-pack.png"] =                {r = 1.0, g = 0.1, b = 0.1},
     ["__base__/graphics/icons/logistic-science-pack.png"] =                  {r = 0.1, g = 1.0, b = 0.1},
@@ -25,43 +27,37 @@ local iconColors =
     ["__pyfusionenergy__/graphics/icons/production-science-pack.png"] =      {r = 0.66,g = 1.0, b = 0.33},
     ["__pyhightech__/graphics/icons/high-tech-science-pack.png"] =           {r = 0.91,g = 0.86,b = 0.24},
 }
-local ingredientColors = {}
-local missing = {}
-local foundMissing = false
-local missingIcons = {}
-local foundMissingIcons = false
+colorMapping.ingredientColors = {}
 
-for _, tech in pairs(data.raw["technology"]) do
-    for _, ingredientPair in ipairs(tech.unit.ingredients) do
-        local ingredientName = ingredientPair[1]
-        local ingredient = data.raw.tool[ingredientName]
-        if not ingredientColors[ingredientName] and not missingIcons[ingredientName] then
-            if ingredient.icon then
-                ingredientColors[ingredientName] = iconColors[ingredient.icon]
-                if not ingredientColors[ingredientName] and not missing[ingredient.icon] then
-                    missing[ingredient.icon] = true
-                    foundMissing = true
+colorMapping.mapIngredientColors = function(rawData)
+    local ingredientColors = {}
+    local missingColors = {}
+    local missingIcons = {}
+    for _, tech in pairs(rawData["technology"]) do
+        for _, ingredientPair in ipairs(tech.unit.ingredients) do
+            local ingredientName = ingredientPair[1]
+            local ingredient = rawData.tool[ingredientName]
+            if not ingredientColors[ingredientName] and not missingIcons[ingredientName] then
+                if ingredient.icon then
+                    ingredientColors[ingredientName] = colorMapping.iconColors[ingredient.icon]
+                    if not ingredientColors[ingredientName] and not missingColors[ingredient.icon] then
+                        missingColors[ingredient.icon] = true
+                    end
+                elseif not missingIcons[ingredientName] then
+                    missingIcons[ingredientName] = true
                 end
-            elseif not missingIcons[ingredientName] then
-                missingIcons[ingredientName] = true
-                foundMissingIcons = true
             end
         end
     end
+    return ingredientColor, missingColors, missingIcons
 end
 
-if foundMissing then
-    log("Missing colours for the following icons: "..serpent.block(missing))
-end
-
-if foundMissingIcons then
-    log("The following ingredients have no icons: "..serpent.block(missingIcons))
-end
-
-local index = 1
-for name, color in pairs(ingredientColors) do
-    data:extend(
-        {
+colorMapping.mappingAsFlyingTexts = function(ingredientColors)
+    local index = 1
+    local flyingTexts = {}
+    for name, color in pairs(ingredientColors) do
+        table.insert(
+            flyingTexts, 
             {
                 type = "flying-text",
                 name = "DiscoScience-colors-"..index,
@@ -69,7 +65,10 @@ for name, color in pairs(ingredientColors) do
                 speed = 1,
                 order = serpent.dump({[name] = color})
             }
-        }
-    )
-    index = index + 1
+        )
+        index = index + 1
+    end
+    return flyingTexts
 end
+
+return colorMapping
