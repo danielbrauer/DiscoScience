@@ -27,7 +27,6 @@ colorMapping.iconColors =
     ["__pyfusionenergy__/graphics/icons/production-science-pack.png"] =      {r = 0.66,g = 1.0, b = 0.33},
     ["__pyhightech__/graphics/icons/high-tech-science-pack.png"] =           {r = 0.91,g = 0.86,b = 0.24},
 }
-colorMapping.ingredientColors = {}
 
 colorMapping.mapIngredientColors = function(rawData)
     local ingredientColors = {}
@@ -49,7 +48,7 @@ colorMapping.mapIngredientColors = function(rawData)
             end
         end
     end
-    return ingredientColor, missingColors, missingIcons
+    return ingredientColors, missingColors, missingIcons
 end
 
 colorMapping.mappingAsFlyingTexts = function(ingredientColors)
