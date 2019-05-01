@@ -1,3 +1,5 @@
+require "utils.softErrorReporting"
+
 local labRenderers = {}
 
 local draw_animation = rendering.draw_animation
