@@ -2,8 +2,7 @@ local researchColor = {}
 
 -- constants
 
-researchColor.unrecognizedColor = {r = 1.0, g = 0.0, b = 1.0}
-researchColor.defaultColors = {unrecognizedColor}
+researchColor.defaultColors = { {r = 1.0, g = 0.0, b = 1.0} }
 
 -- state
 
@@ -20,7 +19,6 @@ researchColor.initialState = {
 }
 
 researchColor.loadIngredientColors = function ()
-    researchColor.state.ingredientColors = {["unrecognized"] = researchColor.unrecognizedColor}
     local index = 1
     while true do
         local prototype = game.entity_prototypes["DiscoScience-colors-"..index]
@@ -33,23 +31,24 @@ researchColor.loadIngredientColors = function ()
     end
 end
 
+researchColor.assembleColorsForResearch = function (tech)
+    local colors = {}
+    for index, ingredient in pairs(tech.research_unit_ingredients) do
+        colors[index] = researchColor.state.ingredientColors[ingredient.name]
+    end
+    if #colors == 0 then
+        colors = researchColor.defaultColors
+    end
+    return colors
+end
+
 researchColor.getColorsForResearch = function (tech)
     if not tech then
-        return defaultColors
+        return researchColor.defaultColors
     else
         local techName = tech.prototype.name;
         if not researchColor.state.researchColors[techName] then
-            local colors = {}
-            for index, ingredient in pairs(tech.research_unit_ingredients) do
-                colors[index] = researchColor.state.ingredientColors[ingredient.name]
-                if not colors[index] then
-                    colors[index] = researchColor.state.ingredientColors.unrecognized
-                end
-            end
-            if #colors == 0 then
-                colors = defaultColors
-            end
-            researchColor.state.researchColors[techName] = colors
+            researchColor.state.researchColors[techName] = researchColor.assembleColorsForResearch(tech)
         end
         return researchColor.state.researchColors[techName]
     end

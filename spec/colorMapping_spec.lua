@@ -81,7 +81,9 @@ describe("colorMapping", function()
             assert.is_nil(next(ingredientColors))
             assert.is_true(missingIcons["automation-science-pack"])
         end)
+    end)
 
+    describe("mappingAsFlyingTexts", function()
         it("creates flying-text for an ingredient", function()
             local color = {r = 1.0, g = 1.0, b = 0.0}
             local flyingTexts = colorMapping.mappingAsFlyingTexts({
