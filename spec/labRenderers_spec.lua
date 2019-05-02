@@ -13,6 +13,7 @@ describe("labRenderers", function()
 
     local lab0 = {
         type = "lab",
+        name = "lab",
         valid = true,
         unit_number = 0,
         force = force0,
@@ -20,6 +21,7 @@ describe("labRenderers", function()
 
     local lab1 = {
         type = "lab",
+        name = "lab",
         valid = true,
         unit_number = 1,
         force = force1,
@@ -27,6 +29,7 @@ describe("labRenderers", function()
 
     local nonLab = {
         type = "tool",
+        name = "hammer",
         valid = true,
         unit_number = 1,
         force = force0,
@@ -34,7 +37,16 @@ describe("labRenderers", function()
 
     local invalidLab = {
         type = "lab",
+        name = "lab",
         valid = false,
+        unit_number = 1,
+        force = force0,
+    }
+
+    local otherLab = {
+        type = "lab",
+        name = "fancy-lab",
+        valid = true,
         unit_number = 1,
         force = force0,
     }
@@ -92,6 +104,11 @@ describe("labRenderers", function()
 
         it("won't add a non-lab", function()
             labRenderers.addLab(nonLab)
+            assert.is_nil(next(labRenderers.state.labsByForce))
+        end)
+
+        it("won't add a lab by any other name", function()
+            labRenderers.addLab(otherLab)
             assert.is_nil(next(labRenderers.state.labsByForce))
         end)
 

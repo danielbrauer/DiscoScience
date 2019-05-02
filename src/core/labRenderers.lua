@@ -49,7 +49,7 @@ labRenderers.addLab = function (entity)
         softErrorReporting.showModError("errors.unregistered-entity-created")
         return
     end
-    if entity.type == "lab" then
+    if entity.type == "lab" and entity.name == "lab" then
         if not labRenderers.state.labsByForce[entity.force.index] then
             labRenderers.state.labsByForce[entity.force.index] = {}
         end
@@ -70,13 +70,16 @@ end
 
 labRenderers.reloadLabs = function ()
     labRenderers.state.labsByForce = {}
+    labRenderers.state.labAnimations = {}
+    labRenderers.state.labLights = {}
+    rendering.clear("DiscoScience")
     for index, lab in ipairs(game.surfaces[1].find_entities_filtered({type = "lab"})) do
         labRenderers.addLab(lab)
     end
 end
 
 labRenderers.removeLab = function (entity)
-    if entity.type == "lab" then
+    if entity.type == "lab" and entity.name == "lab" then
         local labUnitNumber = entity.unit_number
         labRenderers.state.labAnimations[labUnitNumber] = nil
         labRenderers.state.labLights[labUnitNumber] = nil

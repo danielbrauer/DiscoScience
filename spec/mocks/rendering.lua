@@ -9,6 +9,10 @@ rendering.resetMock = function()
     rendering.objects = {}
 end
 
+rendering.clear = function(modName)
+    rendering.objects = {}
+end
+
 rendering.createObjectMock = function(table)
     local object = {
         id = rendering.objectId,
@@ -17,7 +21,7 @@ rendering.createObjectMock = function(table)
     rendering.objects[object.id] = object
 
     rendering.objectId = rendering.objectId + 1
-    
+
     return object.id
 
 end
