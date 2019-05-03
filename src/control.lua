@@ -11,48 +11,33 @@ local colorSwitchFrequency = 60
 
 local createData = function ()
     global.labRendererData = labRenderers.initialState
-
     global.researchColorData = researchColor.initialState
-
     global.labColoringData = labColoring.initialState
 end
 
 local linkData = function ()
     labRenderers.init(global.labRendererData)
-
     researchColor.init(global.researchColorData)
-
     labColoring.init(global.labColoringData)
 end
 
-local resetConfigDependents = function ()
-    if global.labAnimations or global.labLights then -- Update from old, separate tables
-        global.labRendererData = {
-            labsByForce = {},
-            labAnimations = global.labAnimations or {},
-            labLights = global.labLights or {},
-        }
-        labRenderers.init(global.labRendererData)
-    end
-        
-    global.researchColorData = researchColor.init(researchColor.initialState)
-
-    -- Remove old data
+local removeOldData = function ()
     global.scalarState = nil
     global.labsByForce = nil
     global.labAnimations = nil
     global.labLights = nil
+end
 
-    global.labColoringData = labColoring.init(labColoring.initialState)
-    global.labColoringData.meanderingTick = colorSwitchFrequency -- to avoid going negative
+local init = function()
+    createData()
+    linkData()
+    labRenderers.reloadLabs()
+    researchColor.loadIngredientColors()
 end
 
 script.on_init(
     function ()
-        createData()
-        linkData()
-        labRenderers.reloadLabs()
-        researchColor.loadIngredientColors()
+        init()
     end
 )
 
@@ -64,9 +49,8 @@ script.on_load(
 
 script.on_configuration_changed(
     function ()
-        resetConfigDependents()
-        labRenderers.reloadLabs()
-        researchColor.loadIngredientColors()
+        removeOldData()
+        init()
     end
 )
 
