@@ -17,6 +17,8 @@ rendering.createObjectMock = function(table)
     local object = {
         id = rendering.objectId,
         unit_number = table.target.unit_number,
+        visible = true,
+        color = {r=1, g=1, b=1},
     }
     rendering.objects[object.id] = object
 
@@ -40,6 +42,18 @@ end
 
 rendering.destroy = function(id)
     rendering.objects[id] = nil
+end
+
+rendering.get_visible = function(id)
+    return rendering.objects[id].visible
+end
+
+rendering.set_visible = function(id, visible)
+    rendering.objects[id].visible = visible
+end
+
+rendering.set_color = function(id, color)
+    rendering.objects[id].color = color
 end
 
 rendering.entityDestroyed = function(unit_number)

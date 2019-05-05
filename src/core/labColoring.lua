@@ -58,9 +58,36 @@ labColoring.chooseNewDirection = function()
     end
 end
 
-labColoring.switchPattern = function ()
-    chooseNewFunction()
-    chooseNewDirection()
+labColoring.getInfoForForce = function (force, labRenderers, researchColor)
+    local labsForForce = labRenderers.labsForForce(force.index)
+    if labsForForce then
+        local colors = researchColor.getColorsForResearch(force.current_research)
+        local playerPosition = {x = 0, y = 0}
+        if force.players[1] then
+            playerPosition = force.players[1].position
+        end
+        return labsForForce, colors, playerPosition
+    else
+        return nil
+    end
+end
+
+labColoring.updateRenderer = function (lab, colors, playerPosition, labRenderers, fcolor)
+    local animation, light = labRenderers.getRenderObjects(lab)
+    if lab.status == working or lab.status == low_power then
+        if not get_visible(animation) then
+            set_visible(animation, true)
+            set_visible(light, true)
+        end
+        labColoring.colorForLab(labColoring.state.meanderingTick, colors, playerPosition, lab.position, fcolor)
+        set_color(animation, fcolor)
+        set_color(light, fcolor)
+    else
+        if get_visible(animation) then
+            set_visible(animation, false)
+            set_visible(light, false)
+        end
+    end
 end
 
 labColoring.updateRenderers = function (event, labRenderers, researchColor)
@@ -68,35 +95,16 @@ labColoring.updateRenderers = function (event, labRenderers, researchColor)
     local offset = event.tick % stride
     local fcolor = {r=0, g=0, b=0, a=0}
     for name, force in pairs(game.forces) do
-        local labsForForce = labRenderers.labsForForce(force.index)
+        local labsForForce, colors, playerPosition = labColoring.getInfoForForce(force, labRenderers, researchColor)
         if labsForForce then
-            local colors = researchColor.getColorsForResearch(force.current_research)
-            local playerPosition = {x = 0, y = 0}
-            if force.players[1] then
-                playerPosition = force.players[1].position
-            end
-            for index, lab in pairs(labsForForce) do
-                if index % stride == offset then
+            for unitNumber, lab in pairs(labsForForce) do
+                if unitNumber % stride == offset then
                     if not lab.valid then
                         softErrorReporting.showModError("errors.registered-lab-deleted")
                         labRenderers.reloadLabs()
                         return
                     end
-                    local animation, light = labRenderers.getRenderObjects(lab)
-                    if lab.status == working or lab.status == low_power then
-                        if not get_visible(animation) then
-                            set_visible(animation, true)
-                            set_visible(light, true)
-                        end
-                        labColoring.colorForLab(labColoring.state.meanderingTick, colors, playerPosition, lab.position, fcolor)
-                        set_color(animation, fcolor)
-                        set_color(light, fcolor)
-                    else
-                        if get_visible(animation) then
-                            set_visible(animation, false)
-                            set_visible(light, false)
-                        end
-                    end
+                    labColoring.updateRenderer(lab, colors, playerPosition, labRenderers, fcolor)
                 end
             end
         end
