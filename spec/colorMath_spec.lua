@@ -2,27 +2,7 @@ require 'busted.runner'()
 
 package.path = "/Applications/factorio.app/Contents/data/core/lualib/?.lua;" .. package.path
 
-local say = require("say")
-
-local function color_is_normal(state, arguments)
-  local has_key = false
-
-  if not type(arguments[1]) == "table" or #arguments ~= 1 then
-    return false
-  end
-
-  for _, channel in ipairs("r", "g", "b") do
-    if not arguments[1][channel] then return false end
-    if not arguments[1][channel] >= 0 then return false end
-    if not arguments[1][channel] <= 1 then return false end
-  end
-
-  return true
-end
-
-say:set("assertion.color_is_normal.positive", "Expected %s \nto be a valid color")
-say:set("assertion.color_is_normal.negative", "Expected %s \nto not to be a valid color")
-assert:register("assertion", "color_is_normal", color_is_normal, "assertion.color_is_normal.positive", "assertion.color_is_normal.negative")
+require("spec.asserts")
 
 describe("colorMath", function()
     local colorMath

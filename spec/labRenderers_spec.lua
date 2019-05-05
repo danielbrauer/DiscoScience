@@ -57,11 +57,11 @@ describe("labRenderers", function()
     end)
 
     before_each(function()
-        labRenderers.state = {
+        labRenderers.init({
             labsByForce = {},
             labAnimations = {},
             labLights = {},
-        }
+        })
         rendering.resetMock()
         stub(softErrorReporting, "showModError")
     end)
@@ -72,6 +72,10 @@ describe("labRenderers", function()
   
     teardown(function()
         labRenderers = nil
+    end)
+
+    it("has the same initial state", function()
+        assert.same(labRenderers.state, labRenderers.initialState)
     end)
 
     describe("addLab", function()

@@ -38,7 +38,7 @@ labColoring.initialState = {
     meanderingTick = 0,
 }
 
-labColoring.switchPattern = function ()
+labColoring.chooseNewFunction = function()
     local colorFunctions = labColoring.colorMath.colorFunctions
     if #colorFunctions > 1 then
         local newColorFunc = random(1, #colorFunctions - 1)
@@ -48,11 +48,19 @@ labColoring.switchPattern = function ()
         labColoring.colorForLab = colorFunctions[newColorFunc]
         labColoring.state.lastColorFunc = newColorFunc
     end
+end
+
+labColoring.chooseNewDirection = function()
     if labColoring.state.meanderingTick > 0 then
         labColoring.state.direction = floor(random()*1.999)*2 - 1
     else
         labColoring.state.direction = 1
     end
+end
+
+labColoring.switchPattern = function ()
+    chooseNewFunction()
+    chooseNewDirection()
 end
 
 labColoring.updateRenderers = function (event, labRenderers, researchColor)

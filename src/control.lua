@@ -96,7 +96,8 @@ script.on_event(
 script.on_nth_tick(
     colorSwitchFrequency,
     function (event)
-        labColoring.switchPattern()
+        labColoring.chooseNewFunction()
+        labColoring.chooseNewDirection()
     end
 )
 

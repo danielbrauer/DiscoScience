@@ -1,6 +1,6 @@
 require 'busted.runner'()
 
-describe("labRenderers", function()
+describe("softErrorReporting", function()
 
     setup(function()
         _G.game = require("spec.mocks.game")

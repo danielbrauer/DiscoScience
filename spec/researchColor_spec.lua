@@ -1,5 +1,7 @@
 require 'busted.runner'()
 
+require("spec.asserts")
+
 describe("researchColor", function()
     local researchColor
 
@@ -16,6 +18,10 @@ describe("researchColor", function()
             researchColors = {},
             ingredientColors = {},
         })
+    end)
+
+    it("has the same initial state", function()
+        assert.same(researchColor.state, researchColor.initialState)
     end)
 
     describe("loadIngredientColors", function()
@@ -51,6 +57,9 @@ describe("researchColor", function()
             researchColor.state.ingredientColors = ingredientColors
             local researchColors = researchColor.getColorsForResearch(tech)
             assert.equal(2, #researchColors)
+            assert.contains_same(ingredientColors["ingredientR"], researchColors)
+            assert.contains_same(ingredientColors["ingredientB"], researchColors)
+            assert.is_not.contains_same(ingredientColors["ingredientG"], researchColors)
         end)
 
         it("only assembles ingredients for a given research once", function()
