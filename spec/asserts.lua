@@ -19,9 +19,9 @@ local function color_is_normal(state, arguments)
       return false
     end
   
-    for _, channel in ipairs("r", "g", "b") do
+    for _, channel in ipairs({"r", "g", "b"}) do
       if not arguments[1][channel] then return false end
-      assert.in_range(arguments[1], 0, 1)
+      assert.in_range(0, 1, arguments[1][channel])
     end
   
     return true
