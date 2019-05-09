@@ -54,9 +54,6 @@ describe("colorMapping", function()
 
     setup(function()
         _G.serpent = require("serpent")
-        if not _G.loadstring then
-            _G.loadstring = load
-        end
         colorMapping = require("prototypes.colorMapping")
     end)
 

@@ -7,9 +7,6 @@ describe("researchColor", function()
 
     setup(function()
         _G.game = require("spec.mocks.game")
-        if not _G.loadstring then
-            _G.loadstring = load
-        end
         researchColor = require("core.researchColor")
     end)
 
