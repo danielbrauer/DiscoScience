@@ -1,5 +1,7 @@
 require "utils.softErrorReporting"
 
+local compatibleLabs = require("prototypes.compatibleLabs")
+
 local labRenderers = {}
 
 local draw_animation = rendering.draw_animation
@@ -44,12 +46,20 @@ labRenderers.createLight = function (entity)
     })
 end
 
+labRenderers.isCompatibleLab = function (entity)
+    if not entity.type == "lab" then return false end
+    for _, name in pairs(compatibleLabs.names) do
+        if entity.name == name then return true end
+    end
+    return false
+end
+
 labRenderers.addLab = function (entity)
     if not entity or not entity.valid then
         softErrorReporting.showModError("errors.unregistered-entity-created")
         return
     end
-    if entity.type == "lab" and entity.name == "lab" then
+    if labRenderers.isCompatibleLab(entity) then
         if not labRenderers.state.labsByForce[entity.force.index] then
             labRenderers.state.labsByForce[entity.force.index] = {}
         end
@@ -79,7 +89,7 @@ labRenderers.reloadLabs = function ()
 end
 
 labRenderers.removeLab = function (entity)
-    if entity.type == "lab" and entity.name == "lab" then
+    if labRenderers.isCompatibleLab(entity) then
         local labUnitNumber = entity.unit_number
         labRenderers.state.labAnimations[labUnitNumber] = nil
         labRenderers.state.labLights[labUnitNumber] = nil

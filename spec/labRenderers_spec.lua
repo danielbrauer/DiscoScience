@@ -50,6 +50,14 @@ describe("labRenderers", function()
         unit_number = 1,
         force = force0,
     }
+
+    local sctLab = {
+        type = "lab",
+        name = "sct-lab-t4",
+        valid = true,
+        unit_number = 1,
+        force = force0,
+    }
   
     setup(function()
         _G.rendering = require("spec.mocks.rendering")
@@ -76,6 +84,24 @@ describe("labRenderers", function()
 
     it("has the same initial state", function()
         assert.same(labRenderers.state, labRenderers.initialState)
+    end)
+
+    describe("isCompatibleLab", function()
+        it("accepts a regular lab", function()
+            assert.is_true(labRenderers.isCompatibleLab(lab0))
+        end)
+        
+        it("accepts a Science Cost Tweaker lab", function()
+            assert.is_true(labRenderers.isCompatibleLab(sctLab))
+        end)
+
+        it("rejects non-lab", function()
+            assert.is_false(labRenderers.isCompatibleLab(nonLab))
+        end)
+
+        it("rejects other labs", function()
+            assert.is_false(labRenderers.isCompatibleLab(otherLab))
+        end)
     end)
 
     describe("addLab", function()

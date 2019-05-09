@@ -1,12 +1,11 @@
---data.lua
+local animations = {}
 
-local lab = data.raw["lab"]["lab"]
+animations.removeAnimationAndLight = function (lab)
+    lab.on_animation = lab.off_animation
+    lab.light = {intensity = 0, size = 0, color = {r = 0, g = 0, b = 0}}
+end
 
-lab.on_animation = lab.off_animation
-
-lab.light = {intensity = 0, size = 0, color = {r = 0, g = 0, b = 0}}
-
-local labStorm =
+animations.labStorm =
 {
     type = "animation",
     name = "discoscience/lab-storm",
@@ -32,4 +31,4 @@ local labStorm =
     }
 }
 
-data:extend{labStorm}
+return animations
