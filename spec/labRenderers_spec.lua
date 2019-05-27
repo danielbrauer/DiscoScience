@@ -58,6 +58,22 @@ describe("labRenderers", function()
         unit_number = 1,
         force = force0,
     }
+
+    local bobLab = {
+        type = "lab",
+        name = "lab-2",
+        valid = true,
+        unit_number = 1,
+        force = force0,
+    }
+
+    local bobAlienLab = {
+        type = "lab",
+        name = "lab-alien",
+        valid = true,
+        unit_number = 1,
+        force = force0,
+    }
   
     setup(function()
         _G.rendering = require("spec.mocks.rendering")
@@ -93,6 +109,11 @@ describe("labRenderers", function()
         
         it("accepts a Science Cost Tweaker lab", function()
             assert.is_true(labRenderers.isCompatibleLab(sctLab))
+        end)
+        
+        it("accepts a Bob's labs", function()
+            assert.is_true(labRenderers.isCompatibleLab(bobLab))
+            assert.is_true(labRenderers.isCompatibleLab(bobAlienLab))
         end)
 
         it("rejects non-lab", function()
