@@ -67,6 +67,14 @@ describe("labRenderers", function()
         force = force0,
     }
 
+    local schallMachineScalingLab6 = {
+        type = "lab",
+        name = "lab-MS-6",
+        valid = true,
+        unit_number = 2,
+        force = force0,
+    }
+
     local bobLab = {
         type = "lab",
         name = "lab-2",
@@ -168,6 +176,7 @@ describe("labRenderers", function()
         it("scales renderers appropriately", function()
             labRenderers.addLab(lab0)
             labRenderers.addLab(bigLab)
+            labRenderers.addLab(schallMachineScalingLab6)
             local animId, lightId = labRenderers.getRenderObjects(lab0)
             assert.equal(1, rendering.get_x_scale(animId))
             assert.equal(1, rendering.get_y_scale(animId))
@@ -177,6 +186,11 @@ describe("labRenderers", function()
             assert.equal(bigLabScale, rendering.get_x_scale(bigAnimId))
             assert.equal(bigLabScale, rendering.get_y_scale(bigAnimId))
             assert.equal(bigLabScale, rendering.get_scale(bigLightId))
+            local schallAnimId, schallLightId = labRenderers.getRenderObjects(schallMachineScalingLab6)
+            local schallLabScale = labRenderers.specialLabScales[schallMachineScalingLab6.name]
+            assert.equal(schallLabScale, rendering.get_x_scale(schallAnimId))
+            assert.equal(schallLabScale, rendering.get_y_scale(schallAnimId))
+            assert.equal(schallLabScale, rendering.get_scale(schallLightId))
         end)
 
         it("won't add a non-lab", function()

@@ -27,6 +27,12 @@ labRenderers.initialState = {
 
 labRenderers.specialLabScales = {
     ["big-lab"] = 6,
+    ["lab-MS-1"] = 2,
+    ["lab-MS-2"] = 3,
+    ["lab-MS-3"] = 4,
+    ["lab-MS-4"] = 5,
+    ["lab-MS-5"] = 6,
+    ["lab-MS-6"] = 7,
 }
 
 labRenderers.createAnimation = function (entity)
