@@ -6,7 +6,8 @@ compatibleLabs.names = {
     "lab-alien",
     "sct-lab-t2",
     "sct-lab-t3",
-    "sct-lab-t4"
+    "sct-lab-t4",
+    "big-lab",
 }
 
 return compatibleLabs

@@ -25,23 +25,31 @@ labRenderers.initialState = {
     labLights = {},
 }
 
+labRenderers.specialLabScales = {
+    ["big-lab"] = 6,
+}
+
 labRenderers.createAnimation = function (entity)
+    local scale = labRenderers.specialLabScales[entity.name] or 1
     labRenderers.state.labAnimations[entity.unit_number] = draw_animation({
         animation = "discoscience/lab-storm",
         surface = entity.surface,
         target = entity,
+        x_scale = scale,
+        y_scale = scale,
         render_layer = "higher-object-under",
         animation_offset = floor(random()*300)
     })
 end
 
 labRenderers.createLight = function (entity)
+    local scale = labRenderers.specialLabScales[entity.name] or 1
     labRenderers.state.labLights[entity.unit_number] = draw_light({
         sprite = "utility/light_medium",
         surface = entity.surface,
         target = entity,
         intensity = 0.75,
-        size = 8,
+        scale = scale,
         color = {r = 1.0, g = 1.0, b = 1.0}
     })
 end

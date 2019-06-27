@@ -18,6 +18,9 @@ rendering.createObjectMock = function(table)
         id = rendering.objectId,
         unit_number = table.target.unit_number,
         visible = true,
+        scale = table.scale,
+        x_scale = table.x_scale,
+        y_scale = table.y_scale,
         color = {r=1, g=1, b=1},
     }
     rendering.objects[object.id] = object
@@ -54,6 +57,18 @@ end
 
 rendering.set_color = function(id, color)
     rendering.objects[id].color = color
+end
+
+rendering.get_scale = function(id)
+    return rendering.objects[id].scale
+end
+
+rendering.get_x_scale = function(id)
+    return rendering.objects[id].x_scale
+end
+
+rendering.get_y_scale = function(id)
+    return rendering.objects[id].y_scale
 end
 
 rendering.entityDestroyed = function(unit_number)

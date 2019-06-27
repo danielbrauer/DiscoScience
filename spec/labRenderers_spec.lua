@@ -59,6 +59,14 @@ describe("labRenderers", function()
         force = force0,
     }
 
+    local bigLab = {
+        type = "lab",
+        name = "big-lab",
+        valid = true,
+        unit_number = 1,
+        force = force0,
+    }
+
     local bobLab = {
         type = "lab",
         name = "lab-2",
@@ -111,6 +119,10 @@ describe("labRenderers", function()
             assert.is_true(labRenderers.isCompatibleLab(sctLab))
         end)
         
+        it("accepts a Big Lab", function()
+            assert.is_true(labRenderers.isCompatibleLab(bigLab))
+        end)
+        
         it("accepts Bob's labs", function()
             assert.is_true(labRenderers.isCompatibleLab(bobLab))
             assert.is_true(labRenderers.isCompatibleLab(bobAlienLab))
@@ -151,6 +163,20 @@ describe("labRenderers", function()
             assert.not_nil(next(labRenderers.state.labsByForce[lab0.force.index]))
             assert.not_nil(next(labRenderers.state.labsByForce[lab1.force.index]))
             assert.not_equal(labRenderers.state.labsByForce[lab0.force.index], labRenderers.state.labsByForce[lab1.force.index])
+        end)
+
+        it("scales renderers appropriately", function()
+            labRenderers.addLab(lab0)
+            labRenderers.addLab(bigLab)
+            local animId, lightId = labRenderers.getRenderObjects(lab0)
+            assert.equal(1, rendering.get_x_scale(animId))
+            assert.equal(1, rendering.get_y_scale(animId))
+            assert.equal(1, rendering.get_scale(lightId))
+            local bigAnimId, bigLightId = labRenderers.getRenderObjects(bigLab)
+            local bigLabScale = labRenderers.specialLabScales[bigLab.name]
+            assert.equal(bigLabScale, rendering.get_x_scale(bigAnimId))
+            assert.equal(bigLabScale, rendering.get_y_scale(bigAnimId))
+            assert.equal(bigLabScale, rendering.get_scale(bigLightId))
         end)
 
         it("won't add a non-lab", function()
