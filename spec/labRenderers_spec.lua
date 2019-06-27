@@ -111,7 +111,7 @@ describe("labRenderers", function()
             assert.is_true(labRenderers.isCompatibleLab(sctLab))
         end)
         
-        it("accepts a Bob's labs", function()
+        it("accepts Bob's labs", function()
             assert.is_true(labRenderers.isCompatibleLab(bobLab))
             assert.is_true(labRenderers.isCompatibleLab(bobAlienLab))
         end)

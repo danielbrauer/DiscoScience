@@ -25,4 +25,6 @@ end
 
 local flyingTexts = colorMapping.mappingAsFlyingTexts(ingredientColors)
 
-data:extend(flyingTexts)
+if next(flyingTexts) ~= nil then
+    data:extend(flyingTexts)
+end

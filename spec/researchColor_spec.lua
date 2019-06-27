@@ -25,12 +25,19 @@ describe("researchColor", function()
         local flyingText = {
             order = "do local _={test={b=0.0,g=1.0,r=1.0}};return _;end"
         }
+
         it("deserializes ingredient colors from flying text", function()
             _G.game.entity_prototypes = {
                 ["DiscoScience-colors-1"] = flyingText
             }
             researchColor.loadIngredientColors()
             assert.same(researchColor.state.ingredientColors["test"], {r = 1.0, g = 1.0, b = 0.0})
+        end)
+
+        it("is fine if no colors were found", function()
+            _G.game.entity_prototypes = {}
+            researchColor.loadIngredientColors()
+            assert.same(researchColor.state.ingredientColors, {})
         end)
     end)
 
