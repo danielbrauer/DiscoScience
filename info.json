@@ -1,11 +1,20 @@
 {
     "name": "DiscoScience",
-    "version": "0.1.12",
+    "version": "0.1.13",
     "title": "Disco Science",
     "author": "Daniel Brauer",
     "contact": "messagetodaniel@gmail.com",
     "homepage": "",
     "factorio_version": "0.17",
-    "dependencies": ["base >= 0.17"],
+    "dependencies": [
+		"base >= 0.17",
+		"? big-factories",
+		"? bobtech",
+		"? ScienceCostTweakerM",
+		"? pyhightech",
+		"? pyfusionenergy",
+		"? pycoalprocessing",
+		"? MoreSciencePacks"
+	],
     "description": "Make science labs light up with the colour of the ingredients they're consuming. More advanced recipes make a fancier show!"
 }
