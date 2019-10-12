@@ -14,7 +14,8 @@
 		"? pyhightech",
 		"? pyfusionenergy",
 		"? pycoalprocessing",
-		"? MoreSciencePacks"
+        "? MoreSciencePacks",
+        "? IndustrialRevolution"
 	],
     "description": "Make science labs light up with the colour of the ingredients they're consuming. More advanced recipes make a fancier show!"
 }
