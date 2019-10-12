@@ -26,6 +26,13 @@ colorMapping.iconColors =
     ["__pycoalprocessing__/graphics/icons/science-pack-3.png"] =             {r = 0.35,g = 0.64,b = 0.84},
     ["__pyfusionenergy__/graphics/icons/production-science-pack.png"] =      {r = 0.66,g = 1.0, b = 0.33},
     ["__pyhightech__/graphics/icons/high-tech-science-pack.png"] =           {r = 0.91,g = 0.86,b = 0.24},
+    ["__IndustrialRevolution__/graphics/icons/64/automation-science-pack.png"] = {r = 1.0, g = 0.1, b = 0.1},
+    ["__IndustrialRevolution__/graphics/icons/64/chemical-science-pack.png"] =   {r = 0.2, g = 0.2, b = 1.0},
+    ["__IndustrialRevolution__/graphics/icons/64/logistic-science-pack.png"] =   {r = 0.1, g = 1.0, b = 0.1},
+    ["__IndustrialRevolution__/graphics/icons/64/military-science-pack.png"] =   {r = 1.0, g = 0.5, b = 0.0},
+    ["__IndustrialRevolution__/graphics/icons/64/production-science-pack.png"] = {r = 0.8, g = 0.1, b = 0.8},
+    ["__IndustrialRevolution__/graphics/icons/64/space-science-pack.png"] =      {r = 0.8, g = 0.8, b = 0.8},
+    ["__IndustrialRevolution__/graphics/icons/64/utility-science-pack.png"] =    {r = 1.0, g = 0.9, b = 0.1},
 }
 
 colorMapping.mapIngredientColors = function(rawData)

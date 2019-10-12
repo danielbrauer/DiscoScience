@@ -1,4 +1,14 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.1.14
+Date: 12. 10. 2019
+  Changes:
+    - Support Industrial Revolution science packs
+---------------------------------------------------------------------------------------------------
+Version: 0.1.13
+Date: 27. 06. 2019
+  Changes:
+    - Added some optional dependencies so that DiscoScience loads after them, avoiding missing colours
+---------------------------------------------------------------------------------------------------
 Version: 0.1.12
 Date: 27. 06. 2019
   Changes:
