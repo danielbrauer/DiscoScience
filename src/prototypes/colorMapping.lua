@@ -45,7 +45,7 @@ colorMapping.iconColors =
     ["__Krastorio-graphics__/graphics/icons/vanilla-science/logistic-science-pack.png"] =   {r = 0.1, g = 1.0, b = 0.1},
     ["__Krastorio-graphics__/graphics/icons/vanilla-science/military-science-pack.png"] =   {r = 1.0, g = 0.5, b = 0.0},
     ["__Krastorio-graphics__/graphics/icons/vanilla-science/production-science-pack.png"] = {r = 0.8, g = 0.1, b = 0.8},
-	["__Krastorio-graphics__/graphics/icons/vanilla-science/space-science-pack.png"] =      {r = 0.8, g = 0.8, b = 0.8},
+    ["__Krastorio-graphics__/graphics/icons/vanilla-science/space-science-pack.png"] =      {r = 0.8, g = 0.8, b = 0.8},
     ["__Krastorio-graphics__/graphics/icons/vanilla-science/utility-science-pack.png"] =    {r = 1.0, g = 0.9, b = 0.1},
 }
 
