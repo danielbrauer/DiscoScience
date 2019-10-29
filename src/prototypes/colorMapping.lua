@@ -33,6 +33,20 @@ colorMapping.iconColors =
     ["__IndustrialRevolution__/graphics/icons/64/production-science-pack.png"] = {r = 0.8, g = 0.1, b = 0.8},
     ["__IndustrialRevolution__/graphics/icons/64/space-science-pack.png"] =      {r = 0.8, g = 0.8, b = 0.8},
     ["__IndustrialRevolution__/graphics/icons/64/utility-science-pack.png"] =    {r = 1.0, g = 0.9, b = 0.1},
+    ["__Krastorio-graphics__/graphics/icons/mip/automation-research-data.png"] =            {r = 1.0, g = 0.1, b = 0.0},
+    ["__Krastorio-graphics__/graphics/icons/mip/chemical-research-data.png"] =              {r = 0.0, g = 0.6, b = 1.0},
+    ["__Krastorio-graphics__/graphics/icons/mip/logistic-research-data.png"] =              {r = 0.4, g = 0.85, b = 0.0},
+    ["__Krastorio-graphics__/graphics/icons/mip/matter-research-data.png"] =                {r = 0.0, g = 1.0, b = 0.9},
+    ["__Krastorio-graphics__/graphics/icons/mip/military-research-data.png"] =              {r = 0.75, g = 0.75, b = 0.75},
+    ["__Krastorio-graphics__/graphics/icons/mip/optimization-research-data.png"] =          {r = 1.0, g = 1.0, b = 1.0},
+    ["__Krastorio-graphics__/graphics/icons/mip/scientific-research-data.png"] =            {r = 1.0, g = 0.85, b = 0.1},
+    ["__Krastorio-graphics__/graphics/icons/vanilla-science/automation-science-pack.png"] = {r = 1.0, g = 0.1, b = 0.1},
+    ["__Krastorio-graphics__/graphics/icons/vanilla-science/chemical-science-pack.png"] =   {r = 0.2, g = 0.2, b = 1.0},
+    ["__Krastorio-graphics__/graphics/icons/vanilla-science/logistic-science-pack.png"] =   {r = 0.1, g = 1.0, b = 0.1},
+    ["__Krastorio-graphics__/graphics/icons/vanilla-science/military-science-pack.png"] =   {r = 1.0, g = 0.5, b = 0.0},
+    ["__Krastorio-graphics__/graphics/icons/vanilla-science/production-science-pack.png"] = {r = 0.8, g = 0.1, b = 0.8},
+	["__Krastorio-graphics__/graphics/icons/vanilla-science/space-science-pack.png"] =      {r = 0.8, g = 0.8, b = 0.8},
+    ["__Krastorio-graphics__/graphics/icons/vanilla-science/utility-science-pack.png"] =    {r = 1.0, g = 0.9, b = 0.1},
 }
 
 colorMapping.mapIngredientColors = function(rawData)
