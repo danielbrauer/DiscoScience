@@ -2,6 +2,7 @@ local compatibleLabs = {}
 
 compatibleLabs.names = {
     "lab",
+    "k-lab",
     "lab-2",
     "lab-alien",
     "sct-lab-t2",
