@@ -1,6 +1,6 @@
 {
     "name": "DiscoScience",
-    "version": "0.1.14",
+    "version": "0.1.15",
     "title": "Disco Science",
     "author": "Daniel Brauer",
     "contact": "messagetodaniel@gmail.com",
@@ -15,7 +15,8 @@
 		"? pyfusionenergy",
 		"? pycoalprocessing",
         "? MoreSciencePacks",
-        "? IndustrialRevolution"
+        "? IndustrialRevolution",
+        "? Krastorio"
 	],
     "description": "Make science labs light up with the colour of the ingredients they're consuming. More advanced recipes make a fancier show!"
 }
