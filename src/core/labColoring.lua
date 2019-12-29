@@ -27,7 +27,7 @@ labColoring.init = function (state)
     labColoring.state = state
     if labColoring.state then
         local colorFunctions = labColoring.colorMath.colorFunctions
-        labColoring.colorForLab = colorFunctions[labColoring.state.lastColorFunc % #colorFunctions + 1]
+        labColoring.colorForLab = colorFunctions[labColoring.state.lastColorFunc]
     end
     return state
 end
@@ -37,6 +37,10 @@ labColoring.initialState = {
     direction = 1,
     meanderingTick = 0,
 }
+
+labColoring.configurationChanged = function ()
+    labColoring.init(labColoring.initialState)
+end
 
 labColoring.chooseNewFunction = function()
     local colorFunctions = labColoring.colorMath.colorFunctions

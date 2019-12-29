@@ -45,12 +45,18 @@ describe("labColoring", function()
         unit_number = 0,
         force = force1,
     }
-  
+
+    local someState = {
+        lastColorFunc = 2,
+        direction = 1,
+        meanderingTick = 0,
+    }
+
     setup(function()
         _G.rendering = require("spec.mocks.rendering")
         _G.defines = require("spec.mocks.defines")
         labRenderers = require("core.labRenderers")
-        
+
         oldRandom = math.random
         fakeRandom = require("spec.mocks.fakeRandom")
         math.random = fakeRandom.random
@@ -71,7 +77,7 @@ describe("labColoring", function()
         rendering.resetMock()
         labRenderers.addLab(normalLab)
     end)
-  
+
     teardown(function()
         math.random = oldRandom
         labColoring = nil
@@ -83,14 +89,25 @@ describe("labColoring", function()
     end)
 
     describe("init", function()
-        local shortFuncList = {
-            f1 = function() end,
-        }
 
-        it("clamps colorFunc index into range", function()
-            labColoring.state.lastColorFunc = 2
-            labColoring.init(labColoring.initialState)
+        it("doesn't change colorFunc index", function()
+            labColoring.init(someState)
+            assert.equal(2, labColoring.state.lastColorFunc)
+        end)
+    end)
+
+    describe("configurationChanged", function()
+
+        it("resets colorFunc index", function()
+            labColoring.init(someState)
+            labColoring.configurationChanged()
             assert.equal(1, labColoring.state.lastColorFunc)
+        end)
+
+        it("doesn't change colorFunc index", function()
+            labColoring.state.lastColorFunc = 16
+            labColoring.init(labColoring.state)
+            assert.equal(16, labColoring.state.lastColorFunc)
         end)
     end)
 

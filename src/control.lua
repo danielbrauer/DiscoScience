@@ -50,6 +50,7 @@ script.on_load(
 script.on_configuration_changed(
     function ()
         removeOldData()
+        labColoring.configurationChanged()
         init()
     end
 )
