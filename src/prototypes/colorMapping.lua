@@ -3,12 +3,19 @@ local colorMapping = {}
 colorMapping.iconColors =
 {
     ["__base__/graphics/icons/automation-science-pack.png"] =                {r = 1.0, g = 0.1, b = 0.1},
-    ["__base__/graphics/icons/logistic-science-pack.png"] =                  {r = 0.1, g = 1.0, b = 0.1},
     ["__base__/graphics/icons/chemical-science-pack.png"] =                  {r = 0.2, g = 0.2, b = 1.0},
+    ["__base__/graphics/icons/logistic-science-pack.png"] =                  {r = 0.1, g = 1.0, b = 0.1},
     ["__base__/graphics/icons/military-science-pack.png"] =                  {r = 1.0, g = 0.5, b = 0.0},
     ["__base__/graphics/icons/production-science-pack.png"] =                {r = 0.8, g = 0.1, b = 0.8},
-    ["__base__/graphics/icons/utility-science-pack.png"] =                   {r = 1.0, g = 0.9, b = 0.1},
     ["__base__/graphics/icons/space-science-pack.png"] =                     {r = 0.8, g = 0.8, b = 0.8},
+    ["__base__/graphics/icons/utility-science-pack.png"] =                   {r = 1.0, g = 0.9, b = 0.1},
+    ["__BetterFlasks__/graphics/icons/automation-science-pack.png"] =        {r = 1.0, g = 0.1, b = 0.1},
+    ["__BetterFlasks__/graphics/icons/chemical-science-pack.png"] =          {r = 0.2, g = 0.2, b = 1.0},
+    ["__BetterFlasks__/graphics/icons/logistic-science-pack.png"] =          {r = 0.1, g = 1.0, b = 0.1},
+    ["__BetterFlasks__/graphics/icons/military-science-pack.png"] =          {r = 1.0, g = 0.5, b = 0.0},
+    ["__BetterFlasks__/graphics/icons/production-science-pack.png"] =        {r = 0.8, g = 0.1, b = 0.8},
+    ["__BetterFlasks__/graphics/icons/space-science-pack.png"] =             {r = 0.8, g = 0.8, b = 0.8},
+    ["__BetterFlasks__/graphics/icons/utility-science-pack.png"] =           {r = 1.0, g = 0.9, b = 0.1},
     ["__bobtech__/graphics/icons/science-pack-gold.png"] =                   {r = 1.0, g = 0.9, b = 0.1},
     ["__bobtech__/graphics/icons/logistic-science-pack.png"] =               {r = 1.0, g = 0.0, b = 1.0},
     ["__bobtech__/graphics/icons/alien-science-pack.png"] =                  {r = 1.0, g = 0.0, b = 0.6},
@@ -77,7 +84,7 @@ colorMapping.mappingAsFlyingTexts = function(ingredientColors)
     local flyingTexts = {}
     for name, color in pairs(ingredientColors) do
         table.insert(
-            flyingTexts, 
+            flyingTexts,
             {
                 type = "flying-text",
                 name = "DiscoScience-colors-"..index,
