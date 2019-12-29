@@ -1,0 +1,3 @@
+factorio_mod_path = "/Users/danielbrauer/Library/Application Support/factorio/mods"
+factorio_run_path = "/Applications/factorio.app/Contents/MacOS/factorio"
+faketorio_path = "/Users/danielbrauer/.luarocks/share/lua/5.2/faketorio"
