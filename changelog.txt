@@ -1,4 +1,10 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.18.0
+Date: 27. 01. 2020
+  Changes:
+    - Bumped version requirements to 0.18 (I didn't read the patch notes)
+    - Changed versioning scheme to reflect minor Factorio version
+---------------------------------------------------------------------------------------------------
 Version: 0.1.16
 Date: 29. 12. 2019
   Changes:
