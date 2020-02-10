@@ -6,6 +6,7 @@ describe("researchColor", function()
     local researchColor
 
     setup(function()
+        _G.serpent = require("serpent")
         _G.game = require("spec.mocks.game")
         researchColor = require("core.researchColor")
     end)
@@ -56,6 +57,16 @@ describe("researchColor", function()
                 { name = "ingredientB" },
             },
         }
+        local techWithMissing = {
+            prototype = {
+                name = "test-tech2",
+            },
+            research_unit_ingredients = {
+                { name = "ingredientB" },
+                { name = "ingredientX" },
+                { name = "ingredientR" },
+            },
+        }
 
         it("gets a color array for research", function()
             researchColor.state.ingredientColors = ingredientColors
@@ -64,6 +75,14 @@ describe("researchColor", function()
             assert.contains_same(ingredientColors["ingredientR"], researchColors)
             assert.contains_same(ingredientColors["ingredientB"], researchColors)
             assert.is_not.contains_same(ingredientColors["ingredientG"], researchColors)
+        end)
+
+        it("skips missing colors", function()
+            researchColor.state.ingredientColors = ingredientColors
+            local researchColors = researchColor.getColorsForResearch(techWithMissing)
+            assert.equal(2, #researchColors)
+            assert.contains_same(ingredientColors["ingredientR"], researchColors)
+            assert.contains_same(ingredientColors["ingredientB"], researchColors)
         end)
 
         it("only assembles ingredients for a given research once", function()

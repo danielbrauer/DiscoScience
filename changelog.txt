@@ -1,4 +1,9 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.18.1
+Date: XXXX
+  Fixes:
+    - Fixed an issue where partially unknown ingredient lists would cause a crash (thanks Hornwitser!)
+---------------------------------------------------------------------------------------------------
 Version: 0.18.0
 Date: 27. 01. 2020
   Changes:

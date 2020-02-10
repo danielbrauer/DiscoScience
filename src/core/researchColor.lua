@@ -34,7 +34,10 @@ end
 researchColor.assembleColorsForResearch = function (tech)
     local colors = {}
     for index, ingredient in pairs(tech.research_unit_ingredients) do
-        colors[index] = researchColor.state.ingredientColors[ingredient.name]
+        local ingredientColor = researchColor.state.ingredientColors[ingredient.name]
+        if ingredientColor then
+            colors[#colors + 1] = ingredientColor
+        end
     end
     if #colors == 0 then
         colors = researchColor.defaultColors
