@@ -51,46 +51,6 @@ describe("labRenderers", function()
         force = force0,
     }
 
-    local sctLab = {
-        type = "lab",
-        name = "sct-lab-t4",
-        valid = true,
-        unit_number = 1,
-        force = force0,
-    }
-
-    local bigLab = {
-        type = "lab",
-        name = "big-lab",
-        valid = true,
-        unit_number = 1,
-        force = force0,
-    }
-
-    local schallMachineScalingLab6 = {
-        type = "lab",
-        name = "lab-MS-6",
-        valid = true,
-        unit_number = 2,
-        force = force0,
-    }
-
-    local bobLab = {
-        type = "lab",
-        name = "lab-2",
-        valid = true,
-        unit_number = 1,
-        force = force0,
-    }
-
-    local bobAlienLab = {
-        type = "lab",
-        name = "lab-alien",
-        valid = true,
-        unit_number = 1,
-        force = force0,
-    }
-  
     setup(function()
         _G.rendering = require("spec.mocks.rendering")
         labRenderers = require("core.labRenderers")
@@ -109,7 +69,7 @@ describe("labRenderers", function()
     after_each(function()
         softErrorReporting.showModError:revert()
     end)
-  
+
     teardown(function()
         labRenderers = nil
     end)
@@ -121,23 +81,6 @@ describe("labRenderers", function()
     describe("isCompatibleLab", function()
         it("accepts a regular lab", function()
             assert.is_true(labRenderers.isCompatibleLab(lab0))
-        end)
-        
-        it("accepts a Science Cost Tweaker lab", function()
-            assert.is_true(labRenderers.isCompatibleLab(sctLab))
-        end)
-        
-        it("accepts a Big Lab", function()
-            assert.is_true(labRenderers.isCompatibleLab(bigLab))
-        end)
-        
-        it("accepts Bob's labs", function()
-            assert.is_true(labRenderers.isCompatibleLab(bobLab))
-            assert.is_true(labRenderers.isCompatibleLab(bobAlienLab))
-        end)
-
-        it("rejects non-lab", function()
-            assert.is_false(labRenderers.isCompatibleLab(nonLab))
         end)
 
         it("rejects other labs", function()
@@ -157,7 +100,7 @@ describe("labRenderers", function()
             local animationId = labRenderers.state.labAnimations[lab0.unit_number]
             assert.truthy(animationId)
             assert.is_true(rendering.is_valid(animationId))
-            
+
             local lightId = labRenderers.state.labLights[lab0.unit_number]
             assert.truthy(lightId)
             assert.is_true(rendering.is_valid(lightId))
@@ -173,25 +116,25 @@ describe("labRenderers", function()
             assert.not_equal(labRenderers.state.labsByForce[lab0.force.index], labRenderers.state.labsByForce[lab1.force.index])
         end)
 
-        it("scales renderers appropriately", function()
-            labRenderers.addLab(lab0)
-            labRenderers.addLab(bigLab)
-            labRenderers.addLab(schallMachineScalingLab6)
-            local animId, lightId = labRenderers.getRenderObjects(lab0)
-            assert.equal(1, rendering.get_x_scale(animId))
-            assert.equal(1, rendering.get_y_scale(animId))
-            assert.equal(1, rendering.get_scale(lightId))
-            local bigAnimId, bigLightId = labRenderers.getRenderObjects(bigLab)
-            local bigLabScale = labRenderers.specialLabScales[bigLab.name]
-            assert.equal(bigLabScale, rendering.get_x_scale(bigAnimId))
-            assert.equal(bigLabScale, rendering.get_y_scale(bigAnimId))
-            assert.equal(bigLabScale, rendering.get_scale(bigLightId))
-            local schallAnimId, schallLightId = labRenderers.getRenderObjects(schallMachineScalingLab6)
-            local schallLabScale = labRenderers.specialLabScales[schallMachineScalingLab6.name]
-            assert.equal(schallLabScale, rendering.get_x_scale(schallAnimId))
-            assert.equal(schallLabScale, rendering.get_y_scale(schallAnimId))
-            assert.equal(schallLabScale, rendering.get_scale(schallLightId))
-        end)
+        -- it("scales renderers appropriately", function()
+        --     labRenderers.addLab(lab0)
+        --     labRenderers.addLab(bigLab)
+        --     labRenderers.addLab(schallMachineScalingLab6)
+        --     local animId, lightId = labRenderers.getRenderObjects(lab0)
+        --     assert.equal(1, rendering.get_x_scale(animId))
+        --     assert.equal(1, rendering.get_y_scale(animId))
+        --     assert.equal(1, rendering.get_scale(lightId))
+        --     local bigAnimId, bigLightId = labRenderers.getRenderObjects(bigLab)
+        --     local bigLabScale = labRenderers.specialLabScales[bigLab.name]
+        --     assert.equal(bigLabScale, rendering.get_x_scale(bigAnimId))
+        --     assert.equal(bigLabScale, rendering.get_y_scale(bigAnimId))
+        --     assert.equal(bigLabScale, rendering.get_scale(bigLightId))
+        --     local schallAnimId, schallLightId = labRenderers.getRenderObjects(schallMachineScalingLab6)
+        --     local schallLabScale = labRenderers.specialLabScales[schallMachineScalingLab6.name]
+        --     assert.equal(schallLabScale, rendering.get_x_scale(schallAnimId))
+        --     assert.equal(schallLabScale, rendering.get_y_scale(schallAnimId))
+        --     assert.equal(schallLabScale, rendering.get_scale(schallLightId))
+        -- end)
 
         it("won't add a non-lab", function()
             labRenderers.addLab(nonLab)

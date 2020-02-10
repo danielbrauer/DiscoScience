@@ -18,17 +18,8 @@ researchColor.initialState = {
     ingredientColors = {},
 }
 
-researchColor.loadIngredientColors = function ()
-    local index = 1
-    while true do
-        local prototype = game.entity_prototypes["DiscoScience-colors-"..index]
-        if not prototype then break end
-        local pair = loadstring(prototype.order)
-        for name, color in pairs(pair()) do
-            researchColor.state.ingredientColors[name] = color
-        end
-        index = index + 1
-    end
+researchColor.addIngredientColor = function(ingredient, color)
+    researchColor.state.ingredientColors[ingredient.name] = color
 end
 
 researchColor.assembleColorsForResearch = function (tech)

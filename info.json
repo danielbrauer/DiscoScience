@@ -7,17 +7,7 @@
     "homepage": "",
     "factorio_version": "0.18",
     "dependencies": [
-		"base >= 0.18",
-		"? big-factories",
-		"? bobtech",
-		"? ScienceCostTweakerM",
-		"? pyhightech",
-		"? pyfusionenergy",
-		"? pycoalprocessing",
-        "? MoreSciencePacks",
-        "? IndustrialRevolution",
-        "? Krastorio",
-        "? BetterFlasks"
+		"base >= 0.18"
 	],
     "description": "Make science labs light up with the colour of the ingredients they're consuming. More advanced recipes make a fancier show!"
 }

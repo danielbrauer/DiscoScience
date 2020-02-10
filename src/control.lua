@@ -32,8 +32,23 @@ local init = function()
     createData()
     linkData()
     labRenderers.reloadLabs()
-    researchColor.loadIngredientColors()
 end
+
+local remoteAddLab = function(lab, scale)
+    labRenderers.addLabPrototype(lab, scale)
+end
+
+local remoteAddIngredientColor = function(ingredient, color)
+    researchColor.addIngredientColor(ingredient, color)
+end
+
+remote.add_interface(
+    "Disco Science",
+    {
+        addLab = remoteAddLab,
+        addIngredientColor = remoteAddIngredientColor,
+    }
+)
 
 script.on_init(
     function ()

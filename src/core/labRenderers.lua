@@ -1,7 +1,5 @@
 require "utils.softErrorReporting"
 
-local compatibleLabs = require("prototypes.compatibleLabs")
-
 local labRenderers = {}
 
 local draw_animation = rendering.draw_animation
@@ -25,18 +23,16 @@ labRenderers.initialState = {
     labLights = {},
 }
 
-labRenderers.specialLabScales = {
-    ["big-lab"] = 6,
-    ["lab-MS-1"] = 2,
-    ["lab-MS-2"] = 3,
-    ["lab-MS-3"] = 4,
-    ["lab-MS-4"] = 5,
-    ["lab-MS-5"] = 6,
-    ["lab-MS-6"] = 7,
+labRenderers.labScales = {
+    ["lab"] = 1,
 }
 
+labRenderers.addLabPrototype = function (lab, scale)
+    labScales[lab.name] = scale
+end
+
 labRenderers.createAnimation = function (entity)
-    local scale = labRenderers.specialLabScales[entity.name] or 1
+    local scale = labRenderers.labScales[entity.name]
     labRenderers.state.labAnimations[entity.unit_number] = draw_animation({
         animation = "discoscience/lab-storm",
         surface = entity.surface,
@@ -49,7 +45,7 @@ labRenderers.createAnimation = function (entity)
 end
 
 labRenderers.createLight = function (entity)
-    local scale = labRenderers.specialLabScales[entity.name] or 1
+    local scale = labRenderers.labScales[entity.name]
     labRenderers.state.labLights[entity.unit_number] = draw_light({
         sprite = "utility/light_medium",
         surface = entity.surface,
@@ -62,7 +58,7 @@ end
 
 labRenderers.isCompatibleLab = function (entity)
     if not entity.type == "lab" then return false end
-    for _, name in pairs(compatibleLabs.names) do
+    for name, _ in pairs(labRenderers.labScales) do
         if entity.name == name then return true end
     end
     return false
