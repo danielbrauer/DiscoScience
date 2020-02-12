@@ -38,15 +38,15 @@ local remoteAddLab = function(lab, scale)
     labRenderers.addLabPrototype(lab, scale)
 end
 
-local remoteAddIngredientColor = function(ingredient, color)
-    researchColor.addIngredientColor(ingredient, color)
+local remoteSetIngredientColor = function(ingredient, color)
+    researchColor.setIngredientColor(ingredient, color)
 end
 
 remote.add_interface(
     "Disco Science",
     {
         addLab = remoteAddLab,
-        addIngredientColor = remoteAddIngredientColor,
+        setIngredientColor = remoteSetIngredientColor,
     }
 )
 
@@ -120,6 +120,7 @@ script.on_nth_tick(
 script.on_event(
     {defines.events.on_tick},
     function (event)
+        researchColor.validateIngredientColors()
         labColoring.updateRenderers(event, labRenderers, researchColor)
     end
 )
