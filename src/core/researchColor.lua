@@ -28,8 +28,8 @@ researchColor.initialState = {
     },
 }
 
-researchColor.setIngredientColor = function(ingredient, color)
-    researchColor.state.ingredientColors[ingredient] = color
+researchColor.setIngredientColor = function(name, color)
+    researchColor.state.ingredientColors[name] = color
 end
 
 researchColor.validateIngredientColors = function()

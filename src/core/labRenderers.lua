@@ -21,18 +21,17 @@ labRenderers.initialState = {
     labsByForce = {},
     labAnimations = {},
     labLights = {},
+    labScales = {
+        ["lab"] = 1,
+    },
 }
 
-labRenderers.labScales = {
-    ["lab"] = 1,
-}
-
-labRenderers.addLabPrototype = function (lab, scale)
-    labScales[lab.name] = scale
+labRenderers.setLabScale = function (name, scale)
+    labRenderers.state.labScales[name] = scale
 end
 
 labRenderers.createAnimation = function (entity)
-    local scale = labRenderers.labScales[entity.name]
+    local scale = labRenderers.state.labScales[entity.name]
     labRenderers.state.labAnimations[entity.unit_number] = draw_animation({
         animation = "discoscience/lab-storm",
         surface = entity.surface,
@@ -40,25 +39,27 @@ labRenderers.createAnimation = function (entity)
         x_scale = scale,
         y_scale = scale,
         render_layer = "higher-object-under",
-        animation_offset = floor(random()*300)
+        animation_offset = floor(random()*300),
+        visible = false,
     })
 end
 
 labRenderers.createLight = function (entity)
-    local scale = labRenderers.labScales[entity.name]
+    local scale = labRenderers.state.labScales[entity.name]
     labRenderers.state.labLights[entity.unit_number] = draw_light({
         sprite = "utility/light_medium",
         surface = entity.surface,
         target = entity,
         intensity = 0.75,
         scale = scale,
-        color = {r = 1.0, g = 1.0, b = 1.0}
+        color = {r = 1.0, g = 1.0, b = 1.0},
+        visible = false,
     })
 end
 
 labRenderers.isCompatibleLab = function (entity)
     if not entity.type == "lab" then return false end
-    for name, _ in pairs(labRenderers.labScales) do
+    for name, _ in pairs(labRenderers.state.labScales) do
         if entity.name == name then return true end
     end
     return false

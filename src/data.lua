@@ -2,7 +2,7 @@ local animations = require("prototypes.animations")
 
 _G.DiscoScience = {}
 
-_G.DiscoScience.addLab = function (lab)
+_G.DiscoScience.prepareLab = function (lab)
     animations.removeAnimationAndLight(lab)
 end
 

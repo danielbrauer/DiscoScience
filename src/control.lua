@@ -34,18 +34,19 @@ local init = function()
     labRenderers.reloadLabs()
 end
 
-local remoteAddLab = function(lab, scale)
-    labRenderers.addLabPrototype(lab, scale)
+local remoteSetLabScale = function(name, scale)
+    labRenderers.setLabScale(name, scale)
+    labRenderers.reloadLabs()
 end
 
-local remoteSetIngredientColor = function(ingredient, color)
-    researchColor.setIngredientColor(ingredient, color)
+local remoteSetIngredientColor = function(name, color)
+    researchColor.setIngredientColor(name, color)
 end
 
 remote.add_interface(
     "Disco Science",
     {
-        addLab = remoteAddLab,
+        setLabScale = remoteSetLabScale,
         setIngredientColor = remoteSetIngredientColor,
     }
 )
