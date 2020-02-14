@@ -8,18 +8,89 @@ describe("researchColor", function()
     setup(function()
         _G.serpent = require("serpent")
         _G.game = require("spec.mocks.game")
+        _G.log = function() end
         researchColor = require("core.researchColor")
     end)
 
     before_each(function()
         researchColor.init({
+            validated = false,
             researchColors = {},
-            ingredientColors = {},
+            ingredientColors = {
+                ["automation-science-pack"] = {r = 1.0, g = 0.1, b = 0.1},
+                ["logistic-science-pack"] =   {r = 0.1, g = 1.0, b = 0.1},
+                ["chemical-science-pack"] =   {r = 0.2, g = 0.2, b = 1.0},
+                ["production-science-pack"] = {r = 0.8, g = 0.1, b = 0.8},
+                ["military-science-pack"] =   {r = 1.0, g = 0.5, b = 0.0},
+                ["utility-science-pack"] =    {r = 1.0, g = 0.9, b = 0.1},
+                ["space-science-pack"] =      {r = 0.8, g = 0.8, b = 0.8},
+            },
         })
+        assert.same(researchColor.state, researchColor.initialState)
+        game.reset()
     end)
 
-    it("has the same initial state", function()
-        assert.same(researchColor.state, researchColor.initialState)
+    describe("setIngredientColor", function()
+
+        it("adds a new entry", function()
+            researchColor.setIngredientColor("ingred", {r=0, g=1, b=0})
+            assert.same({r=0, g=1, b=0}, researchColor.state.ingredientColors["ingred"])
+        end)
+
+        it("modifies an existing entry", function()
+            researchColor.setIngredientColor("ingred", {r=0, g=1, b=0})
+            researchColor.setIngredientColor("ingred", {r=1, g=0, b=0})
+            assert.same({r=1, g=0, b=0}, researchColor.state.ingredientColors["ingred"])
+        end)
+
+        it("removes an existing entry", function()
+            researchColor.setIngredientColor("ingred", {r=0, g=1, b=0})
+            assert.same({r=0, g=1, b=0}, researchColor.state.ingredientColors["ingred"])
+            researchColor.setIngredientColor("ingred", nil)
+            assert.is_nil(researchColor.state.ingredientColors["ingred"])
+        end)
+    end)
+
+    describe("validateIngredientColors", function()
+        local techsWithABCD = {
+            techA = {
+                research_unit_ingredients = {
+                    A = {name = "A"},
+                    B = {name = "B"},
+                }
+            },
+            techB = {
+                research_unit_ingredients = {
+                    C = {name = "C"},
+                    D = {name = "D"},
+                }
+            }
+        }
+
+        it("sets validated", function()
+            assert.is_false(researchColor.state.validated)
+            researchColor.validateIngredientColors()
+            assert.is_true(researchColor.state.validated)
+        end)
+
+        it("finds a present ingredient", function()
+            game.mockTechPrototypes = techsWithABCD
+            researchColor.setIngredientColor("A", {r = 0, g = 1, b = 1})
+            researchColor.setIngredientColor("B", {r = 0, g = 1, b = 1})
+            researchColor.setIngredientColor("C", {r = 0, g = 1, b = 1})
+            researchColor.setIngredientColor("D", {r = 0, g = 1, b = 1})
+            local missing = researchColor.validateIngredientColors()
+            assert.is_nil(next(missing))
+        end)
+
+        it("finds missing ingredient", function()
+            game.mockTechPrototypes = techsWithABCD
+            researchColor.setIngredientColor("A", {r = 0, g = 1, b = 1})
+            researchColor.setIngredientColor("B", {r = 0, g = 1, b = 1})
+            researchColor.setIngredientColor("C", {r = 0, g = 1, b = 1})
+            local missing = researchColor.validateIngredientColors()
+            assert.equal("D", next(missing))
+        end)
     end)
 
     describe("getColorsForResearch", function()

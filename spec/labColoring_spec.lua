@@ -55,6 +55,7 @@ describe("labColoring", function()
     setup(function()
         _G.rendering = require("spec.mocks.rendering")
         _G.defines = require("spec.mocks.defines")
+        _G.serpent = require("serpent")
         labRenderers = require("core.labRenderers")
 
         oldRandom = math.random
@@ -73,7 +74,11 @@ describe("labColoring", function()
             labsByForce = {},
             labAnimations = {},
             labLights = {},
+            labScales = {
+                ["lab"] = 1,
+            },
         })
+        assert.same(labRenderers.state, labRenderers.initialState)
         rendering.resetMock()
         labRenderers.addLab(normalLab)
     end)

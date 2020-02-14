@@ -1,6 +1,8 @@
 ---------------------------------------------------------------------------------------------------
-Version: 0.18.1
-Date: XXXX
+Version: 1.0.0
+Date: 14. 02. 2020
+  Changes:
+    - Removed direct support for other mods. Instead there is an API so that mods can manage their own compatibility. (See FAQ)
   Fixes:
     - Fixed an issue where partially unknown ingredient lists would cause a crash (thanks Hornwitser!)
 ---------------------------------------------------------------------------------------------------

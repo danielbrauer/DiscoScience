@@ -16,6 +16,7 @@ researchColor.init = function (state)
 end
 
 researchColor.initialState = {
+    validated = false,
     researchColors = {},
     ingredientColors = {
         ["automation-science-pack"] = {r = 1.0, g = 0.1, b = 0.1},
@@ -33,9 +34,10 @@ researchColor.setIngredientColor = function(name, color)
 end
 
 researchColor.validateIngredientColors = function()
-    if researchColor.validated then
+    if researchColor.state.validated then
         return
     end
+    researchColor.state.validated = true
     local techPrototypes = game.get_filtered_technology_prototypes({})
     local notFound = {}
     for _, tech in pairs(techPrototypes) do
@@ -58,7 +60,7 @@ researchColor.validateIngredientColors = function()
         end
         log(foundNames)
     end
-    researchColor.validated = true
+    return notFound
 end
 
 

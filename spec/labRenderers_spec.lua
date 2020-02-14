@@ -61,6 +61,9 @@ describe("labRenderers", function()
             labsByForce = {},
             labAnimations = {},
             labLights = {},
+            labScales = {
+                ["lab"] = 1,
+            },
         })
         rendering.resetMock()
         stub(softErrorReporting, "showModError")
@@ -76,6 +79,26 @@ describe("labRenderers", function()
 
     it("has the same initial state", function()
         assert.same(labRenderers.state, labRenderers.initialState)
+    end)
+
+    describe("setLabScale", function()
+        it("adds a new entry", function()
+            labRenderers.setLabScale("bogus", 10)
+            assert.equal(10, labRenderers.state.labScales["bogus"])
+        end)
+
+        it("modifies an existing entry", function()
+            labRenderers.setLabScale("bogus", 10)
+            labRenderers.setLabScale("bogus", 20)
+            assert.equal(20, labRenderers.state.labScales["bogus"])
+        end)
+
+        it("removes an existing entry", function()
+            labRenderers.setLabScale("bogus", 10)
+            assert.equal(10, labRenderers.state.labScales["bogus"])
+            labRenderers.setLabScale("bogus", nil)
+            assert.is_nil(labRenderers.state.labScales["bogus"])
+        end)
     end)
 
     describe("isCompatibleLab", function()

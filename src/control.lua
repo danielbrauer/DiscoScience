@@ -44,7 +44,7 @@ local remoteSetIngredientColor = function(name, color)
 end
 
 remote.add_interface(
-    "Disco Science",
+    "DiscoScience",
     {
         setLabScale = remoteSetLabScale,
         setIngredientColor = remoteSetIngredientColor,
