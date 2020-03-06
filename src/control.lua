@@ -9,6 +9,11 @@ local labColoring = require("core.labColoring")
 
 local colorSwitchFrequency = 60
 
+-- Track whether state is linked, in order to be able to avoid remote callbacks
+-- before proper initialization (when a dependent mod is initialised later in a game)
+
+local initialized = false
+
 local createData = function ()
     global.labRendererData = labRenderers.initialState
     global.researchColorData = researchColor.initialState
@@ -19,6 +24,7 @@ local linkData = function ()
     labRenderers.init(global.labRendererData)
     researchColor.init(global.researchColorData)
     labColoring.init(global.labColoringData)
+    initialized = true
 end
 
 local removeOldData = function ()
@@ -35,13 +41,17 @@ local init = function()
 end
 
 local remoteSetLabScale = function(name, scale)
-    linkData()
+    if not initialized then
+        return
+    end
     labRenderers.setLabScale(name, scale)
     labRenderers.reloadLabs()
 end
 
 local remoteSetIngredientColor = function(name, color)
-    linkData()
+    if not initialized then
+        return
+    end
     researchColor.setIngredientColor(name, color)
 end
 
