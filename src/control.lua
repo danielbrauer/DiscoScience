@@ -35,11 +35,13 @@ local init = function()
 end
 
 local remoteSetLabScale = function(name, scale)
+    linkData()
     labRenderers.setLabScale(name, scale)
     labRenderers.reloadLabs()
 end
 
 local remoteSetIngredientColor = function(name, color)
+    linkData()
     researchColor.setIngredientColor(name, color)
 end
 
