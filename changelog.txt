@@ -1,4 +1,7 @@
 ---------------------------------------------------------------------------------------------------
+Version: 1.1.0
+Date: 29. 11. 2020
+---------------------------------------------------------------------------------------------------
 Version: 1.0.2
 Date: 06. 03. 2020
   Fixes:
@@ -15,6 +18,7 @@ Date: 14. 02. 2020
     - Removed direct support for other mods. Instead there is an API so that mods can manage their own compatibility. (See FAQ)
   Fixes:
     - Fixed an issue where partially unknown ingredient lists would cause a crash (thanks Hornwitser!)
+    - Bumped version compatibility to 1.1.0 (I didn't read the patch notes)
 ---------------------------------------------------------------------------------------------------
 Version: 0.18.0
 Date: 27. 01. 2020
