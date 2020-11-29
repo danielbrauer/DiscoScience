@@ -77,19 +77,16 @@ labColoring.getInfoForForce = function (force, labRenderers, researchColor)
 end
 
 labColoring.updateRenderer = function (lab, colors, playerPosition, labRenderers, fcolor)
-    local animation, light = labRenderers.getRenderObjects(lab)
+    local animation = labRenderers.getRenderObjects(lab)
     if lab.status == working or lab.status == low_power then
         if not get_visible(animation) then
             set_visible(animation, true)
-            set_visible(light, true)
         end
         labColoring.colorForLab(labColoring.state.meanderingTick, colors, playerPosition, lab.position, fcolor)
         set_color(animation, fcolor)
-        set_color(light, fcolor)
     else
         if get_visible(animation) then
             set_visible(animation, false)
-            set_visible(light, false)
         end
     end
 end

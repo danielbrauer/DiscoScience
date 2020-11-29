@@ -1,13 +1,13 @@
 {
     "name": "DiscoScience",
-    "version": "1.1.0",
+    "version": "1.1.1",
     "title": "Disco Science",
     "author": "Daniel Brauer",
     "contact": "messagetodaniel@gmail.com",
     "homepage": "",
     "factorio_version": "1.1",
     "dependencies": [
-		"base >= 0.18"
+		"base >= 1.1"
 	],
     "description": "Make science labs light up with the colour of the ingredients they're consuming. More advanced recipes make a fancier show!"
 }

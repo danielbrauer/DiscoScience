@@ -3,7 +3,6 @@ require "utils.softErrorReporting"
 local labRenderers = {}
 
 local draw_animation = rendering.draw_animation
-local draw_light = rendering.draw_light
 local is_valid = rendering.is_valid
 local floor = math.floor
 local random = math.random
@@ -20,7 +19,6 @@ end
 labRenderers.initialState = {
     labsByForce = {},
     labAnimations = {},
-    labLights = {},
     labScales = {
         ["lab"] = 1,
     },
@@ -40,19 +38,6 @@ labRenderers.createAnimation = function (entity)
         y_scale = scale,
         render_layer = "higher-object-under",
         animation_offset = floor(random()*300),
-        visible = false,
-    })
-end
-
-labRenderers.createLight = function (entity)
-    local scale = labRenderers.state.labScales[entity.name]
-    labRenderers.state.labLights[entity.unit_number] = draw_light({
-        sprite = "utility/light_medium",
-        surface = entity.surface,
-        target = entity,
-        intensity = 0.75,
-        scale = scale,
-        color = {r = 1.0, g = 1.0, b = 1.0},
         visible = false,
     })
 end
@@ -83,16 +68,12 @@ labRenderers.addLab = function (entity)
         if not labRenderers.state.labAnimations[labUnitNumber] then
             labRenderers.createAnimation(entity)
         end
-        if not labRenderers.state.labLights[labUnitNumber] then
-            labRenderers.createLight(entity)
-        end
     end
 end
 
 labRenderers.reloadLabs = function ()
     labRenderers.state.labsByForce = {}
     labRenderers.state.labAnimations = {}
-    labRenderers.state.labLights = {}
     rendering.clear("DiscoScience")
     for index, lab in ipairs(game.surfaces[1].find_entities_filtered({type = "lab"})) do
         labRenderers.addLab(lab)
@@ -103,7 +84,6 @@ labRenderers.removeLab = function (entity)
     if labRenderers.isCompatibleLab(entity) then
         local labUnitNumber = entity.unit_number
         labRenderers.state.labAnimations[labUnitNumber] = nil
-        labRenderers.state.labLights[labUnitNumber] = nil
         local labsForForce = labRenderers.state.labsByForce[entity.force.index]
         if labsForForce then
             if labsForForce[labUnitNumber] then
@@ -127,11 +107,7 @@ labRenderers.getRenderObjects = function(entity)
         labRenderers.createAnimation(entity)
         softErrorReporting.showModError("errors.render-object-destroyed")
     end
-    if not is_valid(labRenderers.state.labLights[labUnitNumber]) then
-        labRenderers.createLight(entity)
-        softErrorReporting.showModError("errors.render-object-destroyed")
-    end
-    return labRenderers.state.labAnimations[labUnitNumber], labRenderers.state.labLights[labUnitNumber]
+    return labRenderers.state.labAnimations[labUnitNumber]
 end
 
 return labRenderers

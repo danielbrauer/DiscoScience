@@ -31,7 +31,6 @@ local removeOldData = function ()
     global.scalarState = nil
     global.labsByForce = nil
     global.labAnimations = nil
-    global.labLights = nil
 end
 
 local init = function()
