@@ -73,7 +73,6 @@ describe("labColoring", function()
         labRenderers.init({
             labsByForce = {},
             labAnimations = {},
-            labLights = {},
             labScales = {
                 ["lab"] = 1,
             },

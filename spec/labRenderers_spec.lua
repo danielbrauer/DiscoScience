@@ -60,7 +60,6 @@ describe("labRenderers", function()
         labRenderers.init({
             labsByForce = {},
             labAnimations = {},
-            labLights = {},
             labScales = {
                 ["lab"] = 1,
             },
@@ -123,10 +122,6 @@ describe("labRenderers", function()
             local animationId = labRenderers.state.labAnimations[lab0.unit_number]
             assert.truthy(animationId)
             assert.is_true(rendering.is_valid(animationId))
-
-            local lightId = labRenderers.state.labLights[lab0.unit_number]
-            assert.truthy(lightId)
-            assert.is_true(rendering.is_valid(lightId))
         end)
 
         it("adds labs in separate forces", function()
@@ -138,26 +133,6 @@ describe("labRenderers", function()
             assert.not_nil(next(labRenderers.state.labsByForce[lab1.force.index]))
             assert.not_equal(labRenderers.state.labsByForce[lab0.force.index], labRenderers.state.labsByForce[lab1.force.index])
         end)
-
-        -- it("scales renderers appropriately", function()
-        --     labRenderers.addLab(lab0)
-        --     labRenderers.addLab(bigLab)
-        --     labRenderers.addLab(schallMachineScalingLab6)
-        --     local animId, lightId = labRenderers.getRenderObjects(lab0)
-        --     assert.equal(1, rendering.get_x_scale(animId))
-        --     assert.equal(1, rendering.get_y_scale(animId))
-        --     assert.equal(1, rendering.get_scale(lightId))
-        --     local bigAnimId, bigLightId = labRenderers.getRenderObjects(bigLab)
-        --     local bigLabScale = labRenderers.specialLabScales[bigLab.name]
-        --     assert.equal(bigLabScale, rendering.get_x_scale(bigAnimId))
-        --     assert.equal(bigLabScale, rendering.get_y_scale(bigAnimId))
-        --     assert.equal(bigLabScale, rendering.get_scale(bigLightId))
-        --     local schallAnimId, schallLightId = labRenderers.getRenderObjects(schallMachineScalingLab6)
-        --     local schallLabScale = labRenderers.specialLabScales[schallMachineScalingLab6.name]
-        --     assert.equal(schallLabScale, rendering.get_x_scale(schallAnimId))
-        --     assert.equal(schallLabScale, rendering.get_y_scale(schallAnimId))
-        --     assert.equal(schallLabScale, rendering.get_scale(schallLightId))
-        -- end)
 
         it("won't add a non-lab", function()
             labRenderers.addLab(nonLab)
@@ -194,7 +169,6 @@ describe("labRenderers", function()
 
             assert.is_nil(next(labRenderers.labsForForce(lab0.force.index)))
             assert.is_nil(next(labRenderers.state.labAnimations))
-            assert.is_nil(next(labRenderers.state.labLights))
         end)
 
         it("errors when an unregistered lab is removed", function()
@@ -213,23 +187,14 @@ describe("labRenderers", function()
     describe("getRenderObjects", function()
         it("gets valid render objects for lab", function()
             labRenderers.addLab(lab0)
-            local animationId, lightId = labRenderers.getRenderObjects(lab0)
+            local animationId = labRenderers.getRenderObjects(lab0)
             assert.is_true(rendering.is_valid(animationId))
-            assert.is_true(rendering.is_valid(lightId))
         end)
 
         it("errors if animation was destroyed, and creates new animation", function()
             labRenderers.addLab(lab0)
             rendering.destroy(labRenderers.state.labAnimations[lab0.unit_number])
-            local animationId, lightId = labRenderers.getRenderObjects(lab0)
-            assert.stub(softErrorReporting.showModError).was.called_with("errors.render-object-destroyed")
-            assert.is_true(rendering.is_valid(animationId))
-        end)
-
-        it("errors if light was destroyed, and creates new light", function()
-            labRenderers.addLab(lab0)
-            rendering.destroy(labRenderers.state.labLights[lab0.unit_number])
-            local animationId, lightId = labRenderers.getRenderObjects(lab0)
+            local animationId = labRenderers.getRenderObjects(lab0)
             assert.stub(softErrorReporting.showModError).was.called_with("errors.render-object-destroyed")
             assert.is_true(rendering.is_valid(animationId))
         end)
