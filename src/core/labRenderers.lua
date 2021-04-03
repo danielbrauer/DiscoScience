@@ -71,6 +71,23 @@ labRenderers.addLab = function (entity)
     end
 end
 
+labRenderers.changeLabForce = function (entity, old_force)
+    if not entity or not entity.valid then
+        softErrorReporting.showModError("errors.unregistered-entity-created")
+        return
+    end
+
+    if not labRenderers.state.labsByForce[entity.force.index] then
+        labRenderers.state.labsByForce[entity.force.index] = {}
+    end
+
+    local labsForOldForce = labRenderers.state.labsByForce[old_force.index]
+    local labsForNewForce = labRenderers.state.labsByForce[entity.force.index]
+
+    labsForNewForce[entity.unit_number] = labsForOldForce[entity.unit_number]
+    labsForOldForce[entity.unit_number] = nil
+end
+
 labRenderers.reloadLabs = function ()
     labRenderers.state.labsByForce = {}
     labRenderers.state.labAnimations = {}

@@ -14,6 +14,14 @@ local colorSwitchFrequency = 60
 
 local initialized = false
 
+local registerWithRuinsEvent = function()
+    if remote.interfaces["AbandonedRuins"] then
+        script.on_event(remote.call("AbandonedRuins", "get_on_entity_force_changed_event"), function(event)
+            labRenderers.changeLabForce(event.entity, event.force)
+        end)
+    end
+end
+
 local createData = function ()
     global.labRendererData = labRenderers.initialState
     global.researchColorData = researchColor.initialState
@@ -24,6 +32,7 @@ local linkData = function ()
     labRenderers.init(global.labRendererData)
     researchColor.init(global.researchColorData)
     labColoring.init(global.labColoringData)
+    registerWithRuinsEvent()
     initialized = true
 end
 
@@ -36,6 +45,7 @@ end
 local init = function()
     createData()
     linkData()
+    registerWithRuinsEvent()
     labRenderers.reloadLabs()
 end
 
