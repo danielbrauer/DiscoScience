@@ -33,6 +33,10 @@ researchColor.setIngredientColor = function(name, color)
     researchColor.state.ingredientColors[name] = color
 end
 
+researchColor.getIngredientColor = function(name)
+    return researchColor.state.ingredientColors[name]
+end
+
 researchColor.validateIngredientColors = function()
     if researchColor.state.validated then
         return
