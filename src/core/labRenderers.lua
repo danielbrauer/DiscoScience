@@ -96,7 +96,6 @@ labRenderers.reloadLabs = function ()
     rendering.clear("DiscoScience")
     for sur in pairs(game.surfaces) do
         local game_surface = game.get_surface(sur)
-        -- game.print("[DiscoScience] Reloading all Labs on " .. game_surface.name .. " surface") ; Debugging purposes
         for index, lab in ipairs(game_surface.find_entities_filtered({type = "lab"})) do
             labRenderers.addLab(lab)
         end
