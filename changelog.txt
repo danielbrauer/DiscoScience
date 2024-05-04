@@ -3,6 +3,7 @@ Version: 1.1.4
 Date: 04. 05. 2024
   Changes:
     - Support for multiple surfaces (thanks Hi-ImKyle!)
+    - Added getIngredientColor interface (thanks oorzkws!)
 ---------------------------------------------------------------------------------------------------
 Version: 1.1.3
 Date: 05. 03. 2021
