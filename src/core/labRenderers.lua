@@ -94,9 +94,9 @@ labRenderers.reloadLabs = function ()
     labRenderers.state.labsByForce = {}
     labRenderers.state.labAnimations = {}
     rendering.clear("DiscoScience")
-    for sur in pairs(game.surfaces) do
-        local game_surface = game.get_surface(sur)
-        for index, lab in ipairs(game_surface.find_entities_filtered({type = "lab"})) do
+    for surfaceIndex in pairs(game.surfaces) do
+        local surface = game.get_surface(surfaceIndex)
+        for index, lab in ipairs(surface.find_entities_filtered({type = "lab"})) do
             labRenderers.addLab(lab)
         end
     end

@@ -52,6 +52,7 @@ describe("labRenderers", function()
     }
 
     setup(function()
+        _G.game = require("spec.mocks.game")
         _G.rendering = require("spec.mocks.rendering")
         labRenderers = require("core.labRenderers")
     end)
