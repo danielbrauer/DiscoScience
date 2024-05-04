@@ -64,11 +64,19 @@ local remoteSetIngredientColor = function(name, color)
     researchColor.setIngredientColor(name, color)
 end
 
+local remoteGetIngredientColor = function(name)
+    if not initialized then
+        return
+    end
+    return researchColor.getIngredientColor(name)
+end
+
 remote.add_interface(
     "DiscoScience",
     {
         setLabScale = remoteSetLabScale,
         setIngredientColor = remoteSetIngredientColor,
+        getIngredientColor = remoteGetIngredientColor
     }
 )
 
