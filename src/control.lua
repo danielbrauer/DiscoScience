@@ -23,23 +23,23 @@ local registerWithRuinsEvent = function()
 end
 
 local createData = function ()
-    global.labRendererData = labRenderers.initialState
-    global.researchColorData = researchColor.initialState
-    global.labColoringData = labColoring.initialState
+    storage.labRendererData = labRenderers.initialState
+    storage.researchColorData = researchColor.initialState
+    storage.labColoringData = labColoring.initialState
 end
 
 local linkData = function ()
-    labRenderers.init(global.labRendererData)
-    researchColor.init(global.researchColorData)
-    labColoring.init(global.labColoringData)
+    labRenderers.init(storage.labRendererData)
+    researchColor.init(storage.researchColorData)
+    labColoring.init(storage.labColoringData)
     registerWithRuinsEvent()
     initialized = true
 end
 
 local removeOldData = function ()
-    global.scalarState = nil
-    global.labsByForce = nil
-    global.labAnimations = nil
+    storage.scalarState = nil
+    storage.labsByForce = nil
+    storage.labAnimations = nil
 end
 
 local init = function()

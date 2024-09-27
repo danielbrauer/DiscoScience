@@ -42,7 +42,7 @@ researchColor.validateIngredientColors = function()
         return
     end
     researchColor.state.validated = true
-    local techPrototypes = game.get_filtered_technology_prototypes({})
+    local techPrototypes = prototypes.get_technology_filtered({})
     local notFound = {}
     for _, tech in pairs(techPrototypes) do
         for _, ingredient in pairs(tech.research_unit_ingredients) do

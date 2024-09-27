@@ -3,7 +3,6 @@ require "utils.softErrorReporting"
 local labRenderers = {}
 
 local draw_animation = rendering.draw_animation
-local is_valid = rendering.is_valid
 local floor = math.floor
 local random = math.random
 
@@ -127,7 +126,7 @@ end
 
 labRenderers.getRenderObjects = function(entity)
     local labUnitNumber = entity.unit_number
-    if not is_valid(labRenderers.state.labAnimations[labUnitNumber]) then
+    if not labRenderers.state.labAnimations[labUnitNumber].valid then
         labRenderers.createAnimation(entity)
         softErrorReporting.showModError("errors.render-object-destroyed")
     end

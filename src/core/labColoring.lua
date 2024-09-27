@@ -2,10 +2,6 @@ local labColoring = {}
 
 labColoring.colorMath = require("utils.colorMath")
 
-local set_color = rendering.set_color
-local get_visible = rendering.get_visible
-local set_visible = rendering.set_visible
-
 local working = defines.entity_status.working
 local low_power = defines.entity_status.low_power
 
@@ -79,14 +75,14 @@ end
 labColoring.updateRenderer = function (lab, colors, playerPosition, labRenderers, fcolor)
     local animation = labRenderers.getRenderObjects(lab)
     if lab.status == working or lab.status == low_power then
-        if not get_visible(animation) then
-            set_visible(animation, true)
+        if not animation.visible then
+            animation.visible = true
         end
         labColoring.colorForLab(labColoring.state.meanderingTick, colors, playerPosition, lab.position, fcolor)
-        set_color(animation, fcolor)
+        animation.color = fcolor
     else
-        if get_visible(animation) then
-            set_visible(animation, false)
+        if animation.visible then
+            animation.visible = false
         end
     end
 end
