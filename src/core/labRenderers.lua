@@ -68,6 +68,7 @@ labRenderers.addLab = function (entity)
             labRenderers.createAnimation(entity)
         end
     end
+    script.register_on_object_destroyed(entity)
 end
 
 labRenderers.changeLabForce = function (entity, old_force)
@@ -101,21 +102,11 @@ labRenderers.reloadLabs = function ()
     end
 end
 
-labRenderers.removeLab = function (entity)
-    if labRenderers.isCompatibleLab(entity) then
-        local labUnitNumber = entity.unit_number
-        labRenderers.state.labAnimations[labUnitNumber] = nil
-        local labsForForce = labRenderers.state.labsByForce[entity.force.index]
-        if labsForForce then
-            if labsForForce[labUnitNumber] then
-                labsForForce[labUnitNumber] = nil
-            else
-                softErrorReporting.showModError("errors.unregistered-lab-deleted")
-                labRenderers.reloadLabs() -- Force a reload.
-            end
-        else
-            softErrorReporting.showModError("errors.unregistered-lab-deleted")
-            labRenderers.reloadLabs() -- Force a reload.
+labRenderers.removeLab = function (labUnitNumber)
+    labRenderers.state.labAnimations[labUnitNumber] = nil
+    for name, force in pairs(game.forces) do
+        if labRenderers.state.labsByForce[force.index] then
+            labRenderers.state.labsByForce[force.index][labUnitNumber] = nil
         end
     end
 end

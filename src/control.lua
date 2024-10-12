@@ -105,19 +105,20 @@ script.on_event(
         defines.events.on_script_trigger_effect
     },
     function (event)
+        log(event.target_entity.unit_number)
+        log(event.target_entity.prototype.has_flag("get-by-unit-number"))
         labRenderers.addLab(event.target_entity)
     end
 )
 
 script.on_event(
     {
-        defines.events.on_entity_died,
-        defines.events.on_player_mined_entity,
-        defines.events.on_robot_mined_entity,
-        defines.events.script_raised_destroy
+        defines.events.on_object_destroyed
     },
     function (event)
-        labRenderers.removeLab(event.entity)
+        if event.type ~= defines.target_type.entity then return end
+        log(event.useful_id)
+        labRenderers.removeLab(event.useful_id)
     end
 )
 
