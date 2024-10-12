@@ -1,10 +1,22 @@
-local animations = {}
+local labChanges = {}
 
-animations.removeAnimation = function (lab)
+labChanges.prepareLab = function (lab)
     lab.on_animation = lab.off_animation
+    lab.created_effect = {
+        type = "direct",
+        action_delivery = {
+            type = "instant",
+            source_effects = {
+                {
+                    type = "script",
+                    effect_id = "ds-create-lab",
+                },
+            }
+        }
+    }
 end
 
-animations.labStorm =
+labChanges.labStorm =
 {
     type = "animation",
     name = "discoscience/lab-storm",
@@ -32,4 +44,4 @@ animations.labStorm =
     }
 }
 
-return animations
+return labChanges

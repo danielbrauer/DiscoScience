@@ -22,16 +22,16 @@ local registerWithRuinsEvent = function()
     end
 end
 
-local createData = function ()
+local initState = function ()
     storage.labRendererData = labRenderers.initialState
     storage.researchColorData = researchColor.initialState
     storage.labColoringData = labColoring.initialState
 end
 
-local linkData = function ()
-    labRenderers.init(storage.labRendererData)
-    researchColor.init(storage.researchColorData)
-    labColoring.init(storage.labColoringData)
+local linkState = function ()
+    labRenderers.linkState(storage.labRendererData)
+    researchColor.linkState(storage.researchColorData)
+    labColoring.linkState(storage.labColoringData)
     registerWithRuinsEvent()
     initialized = true
 end
@@ -43,8 +43,8 @@ local removeOldData = function ()
 end
 
 local init = function()
-    createData()
-    linkData()
+    initState()
+    linkState()
     registerWithRuinsEvent()
     labRenderers.reloadLabs()
 end
@@ -88,7 +88,7 @@ script.on_init(
 
 script.on_load(
     function ()
-        linkData()
+        linkState()
     end
 )
 
@@ -102,21 +102,10 @@ script.on_configuration_changed(
 
 script.on_event(
     {
-        defines.events.on_built_entity,
-        defines.events.on_robot_built_entity
+        defines.events.on_script_trigger_effect
     },
     function (event)
-        labRenderers.addLab(event.created_entity)
-    end
-)
-
-script.on_event(
-    {
-        defines.events.script_raised_built,
-        defines.events.script_raised_revive
-    },
-    function (event)
-        labRenderers.addLab(event.entity)
+        labRenderers.addLab(event.target_entity)
     end
 )
 

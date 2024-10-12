@@ -5,7 +5,7 @@ describe("animations", function()
 
     setup(function()
         _G.util = {by_pixel = function(x, y) return 1 end}
-        animations = require("prototypes.animations")
+        animations = require("src.prototypes.labChanges")
     end)
 
     teardown(function()

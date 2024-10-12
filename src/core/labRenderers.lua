@@ -10,7 +10,7 @@ local random = math.random
 
 labRenderers.state = nil
 
-labRenderers.init = function (state)
+labRenderers.linkState = function (state)
     labRenderers.state = state
     return state
 end

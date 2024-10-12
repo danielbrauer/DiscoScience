@@ -1,11 +1,11 @@
-local animations = require("prototypes.animations")
+local labChanges = require("prototypes.labChanges")
 
 _G.DiscoScience = {}
 
 _G.DiscoScience.prepareLab = function (lab)
-    animations.removeAnimation(lab)
+    labChanges.prepareLab(lab)
 end
 
-animations.removeAnimation(data.raw["lab"]["lab"])
+labChanges.prepareLab(data.raw["lab"]["lab"])
 
-data:extend{animations.labStorm}
+data:extend{labChanges.labStorm}

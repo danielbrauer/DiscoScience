@@ -19,7 +19,7 @@ labColoring.state = nil
 
 labColoring.colorForLab = nil
 
-labColoring.init = function (state)
+labColoring.linkState = function (state)
     labColoring.state = state
     if labColoring.state then
         local colorFunctions = labColoring.colorMath.colorFunctions
@@ -35,7 +35,7 @@ labColoring.initialState = {
 }
 
 labColoring.configurationChanged = function ()
-    labColoring.init(labColoring.initialState)
+    labColoring.linkState(labColoring.initialState)
 end
 
 labColoring.chooseNewFunction = function()

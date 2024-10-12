@@ -10,7 +10,7 @@ researchColor.state = {}
 
 researchColor.validated = false
 
-researchColor.init = function (state)
+researchColor.linkState = function (state)
     researchColor.state = state
     return state
 end
