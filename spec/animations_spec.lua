@@ -1,15 +1,15 @@
 require 'busted.runner'()
 
 describe("animations", function()
-    local animations
+    local labChanges
 
     setup(function()
         _G.util = {by_pixel = function(x, y) return 1 end}
-        animations = require("src.prototypes.labChanges")
+        labChanges = require("prototypes.labChanges")
     end)
 
     teardown(function()
-        animations = nil
+        labChanges = nil
     end)
 
     describe("removeAnimation", function()
@@ -23,7 +23,7 @@ describe("animations", function()
                 unit_number = 0,
                 force = force0,
             }
-            animations.removeAnimation(lab)
+            labChanges.prepareLab(lab)
             assert.same(lab.on_animation, lab.off_animation)
         end)
     end)

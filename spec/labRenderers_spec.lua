@@ -53,12 +53,15 @@ describe("labRenderers", function()
 
     setup(function()
         _G.game = require("spec.mocks.game")
+        _G.game.forces = {force0, force1}
         _G.rendering = require("spec.mocks.rendering")
+        _G.script = require("spec.mocks.script")
+        _G.serpent = require("serpent")
         labRenderers = require("core.labRenderers")
     end)
 
     before_each(function()
-        labRenderers.init({
+        labRenderers.linkState({
             labsByForce = {},
             labAnimations = {},
             labScales = {
@@ -165,7 +168,7 @@ describe("labRenderers", function()
     describe("removeLab", function()
         it("removes lab and its rendering objects", function()
             labRenderers.addLab(lab0)
-            labRenderers.removeLab(lab0)
+            labRenderers.removeLab(lab0.unit_number)
             assert.stub(softErrorReporting.showModError).was_not.called()
 
             assert.is_nil(next(labRenderers.labsForForce(lab0.force.index)))
@@ -173,14 +176,14 @@ describe("labRenderers", function()
         end)
 
         it("errors when an unregistered lab is removed", function()
-            labRenderers.removeLab(lab0)
+            labRenderers.removeLab(lab0.unit_number)
             assert.stub(softErrorReporting.showModError).was.called_with("errors.unregistered-lab-deleted")
         end)
 
         it("errors when an unregistered lab is removed, even if force exists", function()
             labRenderers.addLab(lab0)
-            labRenderers.removeLab(lab0)
-            labRenderers.removeLab(lab0)
+            labRenderers.removeLab(lab0.unit_number)
+            labRenderers.removeLab(lab0.unit_number)
             assert.stub(softErrorReporting.showModError).was.called_with("errors.unregistered-lab-deleted")
         end)
     end)

@@ -55,6 +55,7 @@ describe("labColoring", function()
     setup(function()
         _G.rendering = require("spec.mocks.rendering")
         _G.defines = require("spec.mocks.defines")
+        _G.script = require("spec.mocks.script")
         _G.serpent = require("serpent")
         labRenderers = require("core.labRenderers")
 
@@ -65,12 +66,12 @@ describe("labColoring", function()
     end)
 
     before_each(function()
-        labColoring.init({
+        labColoring.linkState({
             lastColorFunc = 1,
             direction = 1,
             meanderingTick = 0,
         })
-        labRenderers.init({
+        labRenderers.linkState({
             labsByForce = {},
             labAnimations = {},
             labScales = {
@@ -95,7 +96,7 @@ describe("labColoring", function()
     describe("init", function()
 
         it("doesn't change colorFunc index", function()
-            labColoring.init(someState)
+            labColoring.linkState(someState)
             assert.equal(2, labColoring.state.lastColorFunc)
         end)
     end)
@@ -103,14 +104,14 @@ describe("labColoring", function()
     describe("configurationChanged", function()
 
         it("resets colorFunc index", function()
-            labColoring.init(someState)
+            labColoring.linkState(someState)
             labColoring.configurationChanged()
             assert.equal(1, labColoring.state.lastColorFunc)
         end)
 
         it("doesn't change colorFunc index", function()
             labColoring.state.lastColorFunc = 16
-            labColoring.init(labColoring.state)
+            labColoring.linkState(labColoring.state)
             assert.equal(16, labColoring.state.lastColorFunc)
         end)
     end)

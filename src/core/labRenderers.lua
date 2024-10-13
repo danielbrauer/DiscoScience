@@ -106,9 +106,13 @@ labRenderers.removeLab = function (labUnitNumber)
     labRenderers.state.labAnimations[labUnitNumber] = nil
     for name, force in pairs(game.forces) do
         if labRenderers.state.labsByForce[force.index] then
+            if labRenderers.state.labsByForce[force.index][labUnitNumber] then
             labRenderers.state.labsByForce[force.index][labUnitNumber] = nil
+                return
+            end
         end
     end
+    softErrorReporting.showModError("errors.unregistered-lab-deleted")
 end
 
 labRenderers.labsForForce = function (forceIndex)

@@ -11,6 +11,8 @@ end
 
 game.surfaces = {0,1}
 
+game.forces = {}
+
 game.get_surface = function(index)
     return game.mockSurface
 end
@@ -26,10 +28,6 @@ end
 
 game.show_message_dialog = function()
     assert.is_false(game.is_multiplayer())
-end
-
-game.get_filtered_technology_prototypes = function()
-    return game.mockTechPrototypes
 end
 
 return game
