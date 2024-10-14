@@ -125,7 +125,6 @@ labRenderers.getRenderObjects = function(entity)
     local labUnitNumber = entity.unit_number
     if not labRenderers.state.labAnimations[labUnitNumber].valid then
         labRenderers.createAnimation(entity)
-        softErrorReporting.showModError("errors.render-object-destroyed")
     end
     return labRenderers.state.labAnimations[labUnitNumber]
 end

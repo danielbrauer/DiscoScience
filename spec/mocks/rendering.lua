@@ -41,7 +41,9 @@ rendering.draw_light = function(table)
 end
 
 rendering.destroy = function(id)
-    rendering.objects[id].valid = false
+    if rendering.objects[id] then
+        rendering.objects[id].valid = false
+    end
     rendering.objects[id] = nil
 end
 
