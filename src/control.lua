@@ -105,8 +105,6 @@ script.on_event(
         defines.events.on_script_trigger_effect
     },
     function (event)
-        log(event.target_entity.unit_number)
-        log(event.target_entity.prototype.has_flag("get-by-unit-number"))
         labRenderers.addLab(event.target_entity)
     end
 )
@@ -117,7 +115,6 @@ script.on_event(
     },
     function (event)
         if event.type ~= defines.target_type.entity then return end
-        log(event.useful_id)
         labRenderers.removeLab(event.useful_id)
     end
 )
