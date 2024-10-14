@@ -22,12 +22,13 @@ rendering.createObjectMock = function(table)
         x_scale = table.x_scale,
         y_scale = table.y_scale,
         color = {r=1, g=1, b=1},
+        valid = true,
     }
     rendering.objects[object.id] = object
 
     rendering.objectId = rendering.objectId + 1
 
-    return object.id
+    return object
 
 end
 
@@ -39,11 +40,8 @@ rendering.draw_light = function(table)
     return rendering.createObjectMock(table)
 end
 
-rendering.is_valid = function(id)
-    return rendering.objects[id] ~= nil
-end
-
 rendering.destroy = function(id)
+    rendering.objects[id].valid = false
     rendering.objects[id] = nil
 end
 
