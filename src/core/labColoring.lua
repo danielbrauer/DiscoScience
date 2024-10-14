@@ -28,14 +28,16 @@ labColoring.linkState = function (state)
     return state
 end
 
-labColoring.initialState = {
-    lastColorFunc = 1,
-    direction = 1,
-    meanderingTick = 0,
-}
+labColoring.createInitialState = function()
+    return {
+        lastColorFunc = 1,
+        direction = 1,
+        meanderingTick = 0,
+    }
+end
 
 labColoring.configurationChanged = function ()
-    labColoring.linkState(labColoring.initialState)
+    labColoring.linkState(labColoring.createInitialState())
 end
 
 labColoring.chooseNewFunction = function()

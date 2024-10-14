@@ -61,13 +61,7 @@ describe("labRenderers", function()
     end)
 
     before_each(function()
-        labRenderers.linkState({
-            labsByForce = {},
-            labAnimations = {},
-            labScales = {
-                ["lab"] = 1,
-            },
-        })
+        labRenderers.linkState(labRenderers.createInitialState())
         rendering.resetMock()
         stub(softErrorReporting, "showModError")
     end)
@@ -81,7 +75,7 @@ describe("labRenderers", function()
     end)
 
     it("has the same initial state", function()
-        assert.same(labRenderers.state, labRenderers.initialState)
+        assert.same(labRenderers.state, labRenderers.createInitialState())
     end)
 
     describe("setLabScale", function()
@@ -123,9 +117,9 @@ describe("labRenderers", function()
             local lab = labRenderers.state.labsByForce[lab0.force.index][lab0.unit_number]
             assert.truthy(labRenderers.state.labsByForce[lab0.force.index][lab0.unit_number])
 
-            local animationId = labRenderers.state.labAnimations[lab0.unit_number]
-            assert.truthy(animationId)
-            assert.is_true(rendering.is_valid(animationId))
+            local animation = labRenderers.state.labAnimations[lab0.unit_number]
+            assert.truthy(animation)
+            assert.is_true(animation.valid)
         end)
 
         it("adds labs in separate forces", function()
@@ -191,16 +185,16 @@ describe("labRenderers", function()
     describe("getRenderObjects", function()
         it("gets valid render objects for lab", function()
             labRenderers.addLab(lab0)
-            local animationId = labRenderers.getRenderObjects(lab0)
-            assert.is_true(rendering.is_valid(animationId))
+            local animation = labRenderers.getRenderObjects(lab0)
+            assert.is_true(animation.valid)
         end)
 
         it("errors if animation was destroyed, and creates new animation", function()
             labRenderers.addLab(lab0)
             rendering.destroy(labRenderers.state.labAnimations[lab0.unit_number])
-            local animationId = labRenderers.getRenderObjects(lab0)
+            local animation = labRenderers.getRenderObjects(lab0)
             assert.stub(softErrorReporting.showModError).was.called_with("errors.render-object-destroyed")
-            assert.is_true(rendering.is_valid(animationId))
+            assert.is_true(animation.valid)
         end)
     end)
 end)

@@ -15,13 +15,15 @@ labRenderers.linkState = function (state)
     return state
 end
 
-labRenderers.initialState = {
-    labsByForce = {},
-    labAnimations = {},
-    labScales = {
-        ["lab"] = 1,
-    },
-}
+labRenderers.createInitialState = function()
+    return {
+        labsByForce = {},
+        labAnimations = {},
+        labScales = {
+            ["lab"] = 1,
+        }
+    }
+end
 
 labRenderers.setLabScale = function (name, scale)
     labRenderers.state.labScales[name] = scale

@@ -23,9 +23,9 @@ local registerWithRuinsEvent = function()
 end
 
 local initState = function ()
-    storage.labRendererData = labRenderers.initialState
-    storage.researchColorData = researchColor.initialState
-    storage.labColoringData = labColoring.initialState
+    storage.labRendererData = labRenderers.createInitialState()
+    storage.researchColorData = researchColor.createInitialState()
+    storage.labColoringData = labColoring.createInitialState()
 end
 
 local linkState = function ()
@@ -76,7 +76,7 @@ remote.add_interface(
     {
         setLabScale = remoteSetLabScale,
         setIngredientColor = remoteSetIngredientColor,
-        getIngredientColor = remoteGetIngredientColor
+        getIngredientColor = remoteGetIngredientColor,
     }
 )
 

@@ -66,19 +66,9 @@ describe("labColoring", function()
     end)
 
     before_each(function()
-        labColoring.linkState({
-            lastColorFunc = 1,
-            direction = 1,
-            meanderingTick = 0,
-        })
-        labRenderers.linkState({
-            labsByForce = {},
-            labAnimations = {},
-            labScales = {
-                ["lab"] = 1,
-            },
-        })
-        assert.same(labRenderers.state, labRenderers.initialState)
+        labColoring.linkState(labColoring.createInitialState())
+        labRenderers.linkState(labRenderers.createInitialState())
+        assert.same(labRenderers.state, labRenderers.createInitialState())
         rendering.resetMock()
         labRenderers.addLab(normalLab)
     end)
@@ -90,7 +80,7 @@ describe("labColoring", function()
     end)
 
     it("has the same initial state", function()
-        assert.same(labColoring.state, labColoring.initialState)
+        assert.same(labColoring.state, labColoring.createInitialState())
     end)
 
     describe("init", function()
