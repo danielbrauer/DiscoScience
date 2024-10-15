@@ -9,9 +9,9 @@ local max = math.max
 local random = math.random
 local floor = math.floor
 
--- constants
-
-local stride = 6
+local getStride = function(hq)
+    if hq then return 6 else return 20 end
+end
 
 -- state
 
@@ -74,13 +74,17 @@ labColoring.getInfoForForce = function (force, labRenderers, researchColor)
     end
 end
 
-labColoring.updateRenderer = function (lab, colors, playerPosition, labRenderers, fcolor)
+labColoring.updateRenderer = function (lab, colors, hq, playerPosition, labRenderers, fcolor)
     local animation = labRenderers.getRenderObjects(lab)
     if lab.status == working or lab.status == low_power then
         if not animation.visible then
             animation.visible = true
         end
-        labColoring.colorForLab(labColoring.state.meanderingTick, colors, playerPosition, lab.position, fcolor)
+        if hq then
+            labColoring.colorForLab(labColoring.state.meanderingTick, colors, playerPosition, lab.position, fcolor)
+        else
+            labColoring.colorMath.loopInterpolate(game.tick/40.0, colors, 1.5, fcolor)
+        end
         animation.color = fcolor
     else
         if animation.visible then
@@ -90,7 +94,9 @@ labColoring.updateRenderer = function (lab, colors, playerPosition, labRenderers
 end
 
 labColoring.updateRenderers = function (event, labRenderers, researchColor)
+    local hq = settings.global["discoscience-high-quality"].value
     labColoring.state.meanderingTick = max(0, labColoring.state.meanderingTick + labColoring.state.direction)
+    local stride = getStride(hq)
     local offset = event.tick % stride
     local fcolor = {r=0, g=0, b=0, a=0}
     for name, force in pairs(game.forces) do
@@ -103,7 +109,7 @@ labColoring.updateRenderers = function (event, labRenderers, researchColor)
                         labRenderers.reloadLabs()
                         return
                     end
-                    labColoring.updateRenderer(lab, colors, playerPosition, labRenderers, fcolor)
+                    labColoring.updateRenderer(lab, colors, hq, playerPosition, labRenderers, fcolor)
                 end
             end
         end
