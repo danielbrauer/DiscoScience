@@ -57,15 +57,15 @@ labRenderers.addLab = function (entity)
         return
     end
     if labRenderers.isCompatibleLab(entity) then
-        if not labRenderers.state.labsByForce[entity.force.index] then
-            labRenderers.state.labsByForce[entity.force.index] = {}
+        if not labRenderers.state.labsByForce[entity.force_index] then
+            labRenderers.state.labsByForce[entity.force_index] = {}
         end
         local labUnitNumber = entity.unit_number
-        if labRenderers.state.labsByForce[entity.force.index][labUnitNumber] then
+        if labRenderers.state.labsByForce[entity.force_index][labUnitNumber] then
             softErrorReporting.showModError("errors.lab-registered-twice")
             return
         end
-        labRenderers.state.labsByForce[entity.force.index][labUnitNumber] = entity
+        labRenderers.state.labsByForce[entity.force_index][labUnitNumber] = entity
         if not labRenderers.state.labAnimations[labUnitNumber] then
             labRenderers.createAnimation(entity)
         end
@@ -80,12 +80,12 @@ labRenderers.changeLabForce = function (entity, old_force)
             return
         end
 
-        if not labRenderers.state.labsByForce[entity.force.index] then
-            labRenderers.state.labsByForce[entity.force.index] = {}
+        if not labRenderers.state.labsByForce[entity.force_index] then
+            labRenderers.state.labsByForce[entity.force_index] = {}
         end
 
         local labsForOldForce = labRenderers.state.labsByForce[old_force.index]
-        local labsForNewForce = labRenderers.state.labsByForce[entity.force.index]
+        local labsForNewForce = labRenderers.state.labsByForce[entity.force_index]
 
         labsForNewForce[entity.unit_number] = labsForOldForce[entity.unit_number]
         labsForOldForce[entity.unit_number] = nil
