@@ -17,7 +17,7 @@ end
 
 labRenderers.createInitialState = function()
     return {
-        labsByForce = {},
+        labs = {},
         labAnimations = {},
         labScales = {
             ["lab"] = 1,
@@ -57,15 +57,12 @@ labRenderers.addLab = function (entity)
         return
     end
     if labRenderers.isCompatibleLab(entity) then
-        if not labRenderers.state.labsByForce[entity.force_index] then
-            labRenderers.state.labsByForce[entity.force_index] = {}
-        end
         local labUnitNumber = entity.unit_number
-        if labRenderers.state.labsByForce[entity.force_index][labUnitNumber] then
+        if labRenderers.state.labs[labUnitNumber] then
             softErrorReporting.showModError("errors.lab-registered-twice")
             return
         end
-        labRenderers.state.labsByForce[entity.force_index][labUnitNumber] = entity
+        labRenderers.state.labs[labUnitNumber] = entity
         if not labRenderers.state.labAnimations[labUnitNumber] then
             labRenderers.createAnimation(entity)
         end
@@ -73,27 +70,8 @@ labRenderers.addLab = function (entity)
     script.register_on_object_destroyed(entity)
 end
 
-labRenderers.changeLabForce = function (entity, old_force)
-    if labRenderers.isCompatibleLab(entity) then
-        if not entity or not entity.valid then
-            softErrorReporting.showModError("errors.unregistered-entity-created")
-            return
-        end
-
-        if not labRenderers.state.labsByForce[entity.force_index] then
-            labRenderers.state.labsByForce[entity.force_index] = {}
-        end
-
-        local labsForOldForce = labRenderers.state.labsByForce[old_force.index]
-        local labsForNewForce = labRenderers.state.labsByForce[entity.force_index]
-
-        labsForNewForce[entity.unit_number] = labsForOldForce[entity.unit_number]
-        labsForOldForce[entity.unit_number] = nil
-    end
-end
-
 labRenderers.reloadLabs = function ()
-    labRenderers.state.labsByForce = {}
+    labRenderers.state.labs = {}
     labRenderers.state.labAnimations = {}
     rendering.clear("DiscoScience")
     for surfaceIndex in pairs(game.surfaces) do
@@ -106,19 +84,15 @@ end
 
 labRenderers.removeLab = function (labUnitNumber)
     labRenderers.state.labAnimations[labUnitNumber] = nil
-    for name, force in pairs(game.forces) do
-        if labRenderers.state.labsByForce[force.index] then
-            if labRenderers.state.labsByForce[force.index][labUnitNumber] then
-            labRenderers.state.labsByForce[force.index][labUnitNumber] = nil
-                return
-            end
-        end
+    if labRenderers.state.labs[labUnitNumber] then
+        labRenderers.state.labs[labUnitNumber] = nil
+    else
+        softErrorReporting.showModError("errors.unregistered-lab-deleted")
     end
-    softErrorReporting.showModError("errors.unregistered-lab-deleted")
 end
 
-labRenderers.labsForForce = function (forceIndex)
-    return labRenderers.state.labsByForce[forceIndex]
+labRenderers.getLabs = function()
+    return labRenderers.state.labs
 end
 
 labRenderers.getRenderObjects = function(entity)

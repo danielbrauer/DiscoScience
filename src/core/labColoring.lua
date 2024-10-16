@@ -60,20 +60,6 @@ labColoring.chooseNewDirection = function()
     end
 end
 
-labColoring.getInfoForForce = function (force, labRenderers, researchColor)
-    local labsForForce = labRenderers.labsForForce(force.index)
-    if labsForForce then
-        local colors = researchColor.getColorsForResearch(force.current_research)
-        local playerPosition = {x = 0, y = 0}
-        if force.players[1] then
-            playerPosition = force.players[1].position
-        end
-        return labsForForce, colors, playerPosition
-    else
-        return nil
-    end
-end
-
 labColoring.updateRenderer = function (lab, colors, hq, playerPosition, labRenderers, fcolor)
     local animation = labRenderers.getRenderObjects(lab)
     if lab.status == working or lab.status == low_power then
@@ -99,19 +85,25 @@ labColoring.updateRenderers = function (event, labRenderers, researchColor)
     local stride = getStride(hq)
     local offset = event.tick % stride
     local fcolor = {r=0, g=0, b=0, a=0}
+    local forceInfo = {}
     for name, force in pairs(game.forces) do
-        local labsForForce, colors, playerPosition = labColoring.getInfoForForce(force, labRenderers, researchColor)
-        if labsForForce then
-            for unitNumber, lab in pairs(labsForForce) do
-                if unitNumber % stride == offset then
-                    if not lab.valid then
-                        softErrorReporting.showModError("errors.registered-lab-deleted")
-                        labRenderers.reloadLabs()
-                        return
-                    end
-                    labColoring.updateRenderer(lab, colors, hq, playerPosition, labRenderers, fcolor)
-                end
+        local forceResearchColors = researchColor.getColorsForResearch(force.current_research)
+        local playerPosition = {x = 0, y = 0}
+        local _, firstConnectedPlayer = next(force.connected_players)
+        if firstConnectedPlayer then
+            playerPosition = firstConnectedPlayer.position
+        end
+        forceInfo[force.index] = {forceResearchColors, playerPosition}
+    end
+    for unitNumber, lab in pairs(labRenderers.getLabs()) do
+        if unitNumber % stride == offset then
+            if not lab.valid then
+                softErrorReporting.showModError("errors.registered-lab-deleted")
+                labRenderers.reloadLabs()
+                return
             end
+            local info = forceInfo[lab.force_index]
+            labColoring.updateRenderer(lab, info[1], hq, info[2], labRenderers, fcolor)
         end
     end
 end

@@ -7,8 +7,7 @@
     "homepage": "",
     "factorio_version": "2.0",
     "dependencies": [
-		"base >= 2.0",
-        "? AbandonedRuins >= 1.1.4"
+		"base >= 2.0"
 	],
     "description": "Make science labs light up with the colour of the ingredients they're consuming. More advanced recipes make a fancier show!"
 }

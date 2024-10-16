@@ -14,14 +14,6 @@ local colorSwitchFrequency = 60
 
 local initialized = false
 
-local registerWithRuinsEvent = function()
-    if remote.interfaces["AbandonedRuins"] then
-        script.on_event(remote.call("AbandonedRuins", "get_on_entity_force_changed_event"), function(event)
-            labRenderers.changeLabForce(event.entity, event.force)
-        end)
-    end
-end
-
 local initState = function ()
     storage.labRendererData = labRenderers.createInitialState()
     storage.researchColorData = researchColor.createInitialState()
@@ -32,7 +24,6 @@ local linkState = function ()
     labRenderers.linkState(storage.labRendererData)
     researchColor.linkState(storage.researchColorData)
     labColoring.linkState(storage.labColoringData)
-    registerWithRuinsEvent()
     initialized = true
 end
 
@@ -45,7 +36,6 @@ end
 local init = function()
     initState()
     linkState()
-    registerWithRuinsEvent()
     labRenderers.reloadLabs()
 end
 
@@ -119,13 +109,6 @@ script.on_event(
     end
 )
 
-script.on_event(
-    {defines.events.on_forces_merged},
-    function (event)
-        labRenderers.reloadLabs()
-    end
-)
-
 script.on_nth_tick(
     colorSwitchFrequency,
     function (event)
@@ -164,14 +147,12 @@ script.on_event(
 --         local _, animation = next(labRenderers.state.labAnimations)
 --         assert(animation, "Missing animation")
 --         assert(animation.target.entity.unit_number == lab.unit_number, "Animation not targeted")
---         local labsForNeutral = labRenderers.state.labsByForce[game.forces.neutral.index]
---         assert(labsForNeutral, "Missing labs for force")
---         local _, indexedLab = next(labsForNeutral)
+--         local _, indexedLab = next(labRenderers.state.labs)
 --         assert(indexedLab.unit_number == lab.unit_number, "Recorded wrong unit")
 --         lab.destroy()
 --     end,
 --     function()
---         local _, indexedLab = next(labRenderers.state.labsByForce[game.forces.neutral.index])
+--         local _, indexedLab = next(labRenderers.state.labs)
 --         assert(not indexedLab, "Still tracking lab")
 --         local _, animation = next(labRenderers.state.labAnimations)
 --         assert(not animation, "Still tracking animation")
@@ -184,33 +165,16 @@ script.on_event(
 --             force = game.forces.neutral,
 --             raise_built = false
 --         }
---         local labsForNeutral = labRenderers.state.labsByForce[game.forces.neutral.index]
---         assert(labsForNeutral, "Missing labs for force")
---         local _, indexedLab = next(labsForNeutral)
+--         local _, indexedLab = next(labRenderers.state.labs)
 --         assert(indexedLab.unit_number == lab.unit_number, "Recorded wrong unit")
 --         lab.destroy()
 --     end,
 --     function()
---         local _, indexedLab = next(labRenderers.state.labsByForce[game.forces.neutral.index])
+--         local _, indexedLab = next(labRenderers.state.labs)
 --         assert(not indexedLab, "Still tracking lab")
 --         local _, animation = next(labRenderers.state.labAnimations)
 --         assert(not animation, "Still tracking animation")
 --         cleanForTesting()
---     end,
---     function()
---         local lab = game.surfaces[1].create_entity{
---             name = "lab",
---             position = {x=0, y=0},
---             force = game.forces.neutral,
---             raise_built = false
---         }
---         local _, indexedLab = next(labRenderers.state.labsByForce[game.forces.neutral.index])
---         assert(indexedLab, "Missing lab")
---         lab.force = "player"
---         _, indexedLab = next(labRenderers.state.labsByForce[game.forces.neutral.index])
---         assert(not indexedLab, "Lab tracked in wrong force")
---         _, indexedLab = next(labRenderers.state.labsByForce[game.forces.player.index])
---         assert(indexedLab, "Missing lab after force change")
 --     end,
 -- }
 
