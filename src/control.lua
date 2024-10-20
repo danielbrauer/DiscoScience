@@ -176,6 +176,23 @@ script.on_event(
 --         assert(not animation, "Still tracking animation")
 --         cleanForTesting()
 --     end,
+--     function()
+--         local lab = game.surfaces[1].create_entity{
+--             name = "lab",
+--             position = {x=0, y=0},
+--             force = game.forces.neutral,
+--             raise_built = true
+--         }
+--         local _, indexedLab = next(labRenderers.state.labs)
+--         assert(indexedLab.unit_number == lab.unit_number, "Recorded wrong unit")
+--         local p = game.get_player(1)
+--         p.mine_entity(lab)
+--     end,
+--     function()
+--         local _, indexedLab = next(labRenderers.state.labs)
+--         assert(not indexedLab, "Still tracking lab")
+--         cleanForTesting()
+--     end,
 -- }
 
 -- script.on_event(
