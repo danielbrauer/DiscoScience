@@ -1,6 +1,6 @@
 {
     "name": "DiscoScience",
-    "version": "2.0.0",
+    "version": "2.0.1",
     "title": "Disco Science",
     "author": "Daniel Brauer",
     "contact": "messagetodaniel@gmail.com",
@@ -9,5 +9,5 @@
     "dependencies": [
 		"base >= 2.0"
 	],
-    "description": "Make science labs light up with the colour of the ingredients they're consuming. More advanced recipes make a fancier show!"
+    "description": "Science labs light up with the colour of the ingredients they're consuming, instead of always blue. More advanced recipes make a fancier show! If it's slowing down your game, try turning off \"high quality\" in the mod options."
 }

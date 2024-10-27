@@ -98,7 +98,6 @@ labColoring.updateRenderers = function (event, labRenderers, researchColor)
     for unitNumber, lab in pairs(labRenderers.getLabs()) do
         if unitNumber % stride == offset then
             if not lab.valid then
-                softErrorReporting.showModError("errors.registered-lab-deleted")
                 labRenderers.reloadLabs()
                 return
             end

@@ -1,6 +1,4 @@
 
-require("utils.softErrorReporting")
-
 local researchColor = require("core.researchColor")
 local labRenderers = require("core.labRenderers")
 local labColoring = require("core.labColoring")

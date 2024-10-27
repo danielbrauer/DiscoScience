@@ -1,5 +1,3 @@
-require "utils.softErrorReporting"
-
 local labRenderers = {}
 
 local draw_animation = rendering.draw_animation
@@ -53,13 +51,11 @@ end
 
 labRenderers.addLab = function (entity)
     if not entity or not entity.valid then
-        softErrorReporting.showModError("errors.unregistered-entity-created")
         return
     end
     if labRenderers.isCompatibleLab(entity) then
         local labUnitNumber = entity.unit_number
         if labRenderers.state.labs[labUnitNumber] then
-            softErrorReporting.showModError("errors.lab-registered-twice")
             return
         end
         labRenderers.state.labs[labUnitNumber] = entity
@@ -84,11 +80,7 @@ end
 
 labRenderers.removeLab = function (labUnitNumber)
     labRenderers.state.labAnimations[labUnitNumber] = nil
-    if labRenderers.state.labs[labUnitNumber] then
-        labRenderers.state.labs[labUnitNumber] = nil
-    else
-        softErrorReporting.showModError("errors.unregistered-lab-deleted")
-    end
+    labRenderers.state.labs[labUnitNumber] = nil
 end
 
 labRenderers.getLabs = function()

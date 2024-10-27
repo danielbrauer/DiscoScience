@@ -1,9 +1,15 @@
 ---------------------------------------------------------------------------------------------------
+Version: 2.0.1
+Date: 12. 10. 2024
+  Changes:
+    - Remove error reporting (thank you for your service)
+---------------------------------------------------------------------------------------------------
 Version: 2.0.0
 Date: 12. 10. 2024
   Changes:
     - Support for 2.0 API Updates
     - Colours updated for Space Age science packs
+    - Option to reduce quality
 ---------------------------------------------------------------------------------------------------
 Version: 1.1.4
 Date: 04. 05. 2024
