@@ -19,7 +19,7 @@ end
 labChanges.labStorm =
 {
     type = "animation",
-    name = "discoscience/lab-storm",
+    name = "discoscience-lab-storm",
     filename = "__DiscoScience__/graphics/lab-storm.png",
     blend_mode = "additive",
     draw_as_glow = true,

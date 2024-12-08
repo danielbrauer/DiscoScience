@@ -30,7 +30,7 @@ end
 labRenderers.createAnimation = function (entity)
     local scale = labRenderers.state.labScales[entity.name]
     labRenderers.state.labAnimations[entity.unit_number] = draw_animation({
-        animation = "discoscience/lab-storm",
+        animation = "discoscience-lab-storm",
         surface = entity.surface,
         target = entity,
         x_scale = scale,
