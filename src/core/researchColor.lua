@@ -15,29 +15,84 @@ researchColor.linkState = function (state)
     return state
 end
 
+--- data validation
+local ingredientColors = prototypes.mod_data["discoscience-science-colors"].data
+
+function researchColor.validateColor(color)
+    ---@type Color.0
+    local possibleColor = {
+        r = color.r or color[1],
+        g = color.g or color[2],
+        b = color.b or color[3],
+        a = color.a or color[4],
+    }
+    local is_255, has_value, outside_bounds = false, false, false
+    for _, value in pairs(possibleColor) do
+        has_value = true
+        if value < 0 or value > 255 then
+            outside_bounds = true
+            break
+        end
+        if value > 1 then is_255 = true end
+    end
+
+    if outside_bounds or not has_value then
+        return nil
+    end
+
+    if is_255 then
+        for key, value in pairs(possibleColor) do
+            possibleColor[key] = value / 255
+        end
+    end
+
+    local alpha = possibleColor.a or 1
+
+    return {
+        r = (possibleColor.r or 0) * alpha,
+        g = (possibleColor.g or 0) * alpha,
+        b = (possibleColor.b or 0) * alpha,
+    }
+end
+
+local function validateSciencePack(item, color)
+    local item_prototype = prototypes.item[item]
+
+    if not item_prototype then
+        log("Given a color for a non-existent item: "..item.." - "..serpent.line(color))
+        return nil
+    end
+    if item_prototype.type ~= "tool" then
+        log("Given item was not a science pack: "..item.." - "..serpent.line(color))
+        return nil
+    end
+
+    local valid_color = researchColor.validateColor(color)
+    if not valid_color then
+        log("Given item color was not a valid color: "..item.." - "..serpent.line(color))
+        return nil
+    else
+        return valid_color
+    end
+end
+
+for item, color in pairs(ingredientColors) do
+    ingredientColors[item] = validateSciencePack(item, color)
+end
+
+
 researchColor.createInitialState = function()
     return {
         validated = false,
         researchColors = {},
-        ingredientColors = {
-            ["automation-science-pack"] =      {r = 0.91, g = 0.16, b = 0.20},
-            ["logistic-science-pack"] =        {r = 0.29, g = 0.97, b = 0.31},
-            ["chemical-science-pack"] =        {r = 0.28, g = 0.93, b = 0.95},
-            ["production-science-pack"] =      {r = 0.83, g = 0.06, b = 0.92},
-            ["military-science-pack"] =        {r = 0.50, g = 0.10, b = 0.50},
-            ["utility-science-pack"] =         {r = 0.96, g = 0.93, b = 0.30},
-            ["space-science-pack"] =           {r = 0.80, g = 0.80, b = 0.80},
-            ["agricultural-science-pack"] =    {r = 0.84, g = 0.84, b = 0.15},
-            ["metallurgic-science-pack"] =     {r = 0.99, g = 0.50, b = 0.04},
-            ["electromagnetic-science-pack"] = {r = 0.89, g = 0.00, b = 0.56},
-            ["cryogenic-science-pack"] =       {r = 0.14, g = 0.18, b = 0.74},
-            ["promethium-science-pack"] =      {r = 0.10, g = 0.10, b = 0.50},
-        },
+        ingredientColors = ingredientColors,
     }
 end
 
 researchColor.setIngredientColor = function(name, color)
-    researchColor.state.ingredientColors[name] = color
+    local valid_color = researchColor.validateColor(color)
+    if not valid_color then error("Invalid color given") end
+    researchColor.state.ingredientColors[name] = valid_color
 end
 
 researchColor.getIngredientColor = function(name)

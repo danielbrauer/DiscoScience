@@ -13,28 +13,64 @@ labRenderers.linkState = function (state)
     return state
 end
 
+-- Data Validation
+local labData = prototypes.mod_data["discoscience-lab-data"].data
+
+local function validateLabData(lab, data)
+    local labPrototype = prototypes.entity[lab]
+    if not labPrototype then
+        log("Given lab data for non-existent lab: "..lab.."\t"..serpent.line(data))
+        return nil
+    end
+    if labPrototype.type ~= "lab" then
+        log("Given lab data for a non-lab entity: "..lab)
+        return nil
+    end
+
+    --FIXME: Can't check if a given animation is valid
+    -- The game has no way to currently check, so we need to ask for an interface
+
+    if not data.scale then
+        data.scale = 1
+    elseif type(data.scale) ~= "number" then
+        error("Given animation scale")
+    end
+
+    return data
+end
+
+for lab, data in pairs(labData) do
+    labData[lab] = validateLabData(lab, data)
+end
+
 labRenderers.createInitialState = function()
     return {
         labs = {},
         labAnimations = {},
-        labScales = {
-            ["lab"] = 1,
-        }
+        labData = labData
     }
 end
 
 labRenderers.setLabScale = function (name, scale)
-    labRenderers.state.labScales[name] = scale
+    local labData = labRenderers.state.labData[name]
+    if not labData then
+        labRenderers.state.labData[name] = {
+            animation = "discoscience-lab-storm",
+            scale = scale,
+        }
+    else
+        labData.scale = scale
+    end
 end
 
 labRenderers.createAnimation = function (entity)
-    local scale = labRenderers.state.labScales[entity.name]
+    local labData = labRenderers.state.labData[entity.name]
     labRenderers.state.labAnimations[entity.unit_number] = draw_animation({
-        animation = "discoscience-lab-storm",
+        animation = labData.animation,
         surface = entity.surface,
         target = entity,
-        x_scale = scale,
-        y_scale = scale,
+        x_scale = labData.scale,
+        y_scale = labData.scale,
         render_layer = "higher-object-under",
         animation_offset = floor(random()*300),
         visible = false,
@@ -43,10 +79,7 @@ end
 
 labRenderers.isCompatibleLab = function (entity)
     if not entity.type == "lab" then return false end
-    for name, _ in pairs(labRenderers.state.labScales) do
-        if entity.name == name then return true end
-    end
-    return false
+    return labRenderers.state.labData[entity.name] and true or false
 end
 
 labRenderers.addLab = function (entity)
@@ -70,8 +103,7 @@ labRenderers.reloadLabs = function ()
     labRenderers.state.labs = {}
     labRenderers.state.labAnimations = {}
     rendering.clear("DiscoScience")
-    for surfaceIndex in pairs(game.surfaces) do
-        local surface = game.get_surface(surfaceIndex)
+    for _, surface in pairs(game.surfaces) do
         for index, lab in ipairs(surface.find_entities_filtered({type = "lab"})) do
             labRenderers.addLab(lab)
         end

@@ -1,6 +1,16 @@
 local labChanges = {}
 
-labChanges.prepareLab = function (lab)
+local labData = data.raw["mod-data"]["discoscience-lab-data"].data
+
+---@param lab data.LabPrototype
+---@param animation? string
+---@param scale? double
+labChanges.prepareLab = function (lab, animation, scale)
+    labData[lab.name] = {
+        animation = animation or "discoscience-lab-storm",
+        scale = scale or 1,
+    }
+
     lab.on_animation = lab.off_animation
     lab.created_effect = {
         type = "direct",
