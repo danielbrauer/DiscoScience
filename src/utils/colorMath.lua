@@ -12,12 +12,20 @@ local random = math.random
 
 local colorMath = {}
 
+---@param x double
+---@param a Color.0
+---@param b Color.0
+---@param out Color.0
 function colorMath.lerpColor(x, a, b, out)
     out.r = a.r + (b.r - a.r) * x
     out.g = a.g + (b.g - a.g) * x
     out.b = a.b + (b.b - a.b) * x
 end
 
+---@param t double
+---@param colors Color.0[]
+---@param blendHardness double
+---@param output Color.0
 function colorMath.loopInterpolate(t, colors, blendHardness, output)
     local index1, x = modf(t)
     local index2 = index1 + 1
@@ -27,6 +35,7 @@ function colorMath.loopInterpolate(t, colors, blendHardness, output)
     colorMath.lerpColor(x, color1, color2, output)
 end
 
+---@type (fun(tick:uint,colors:Color.0[],playerPosition:MapPosition,labPosition:MapPosition,fcolor:Color.0))[]
 colorMath.colorFunctions = {
     function (tick, colors, playerPosition, labPosition, fcolor)
         local r = distance(playerPosition, labPosition)

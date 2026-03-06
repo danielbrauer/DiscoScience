@@ -6,6 +6,7 @@ local labColoring = require("core.labColoring")
 -- constants
 
 local colorSwitchFrequency = 60
+storage = {}
 
 -- Track whether state is linked, in order to be able to avoid remote callbacks
 -- before proper initialization (when a dependent mod is initialised later in a game)
@@ -26,8 +27,14 @@ local linkState = function ()
 end
 
 local removeOldData = function ()
+    ---@deprecated Old
+    ---@type nil
     storage.scalarState = nil
+    ---@deprecated Old
+    ---@type nil
     storage.labsByForce = nil
+    ---@deprecated Old
+    ---@type nil
     storage.labAnimations = nil
 end
 
@@ -89,18 +96,14 @@ script.on_configuration_changed(
 )
 
 script.on_event(
-    {
-        defines.events.on_script_trigger_effect
-    },
+    defines.events.on_script_trigger_effect,
     function (event)
         labRenderers.addLab(event.target_entity)
     end
 )
 
 script.on_event(
-    {
-        defines.events.on_object_destroyed
-    },
+    defines.events.on_object_destroyed,
     function (event)
         if event.type ~= defines.target_type.entity then return end
         labRenderers.removeLab(event.useful_id)
@@ -116,7 +119,7 @@ script.on_nth_tick(
 )
 
 script.on_event(
-    {defines.events.on_tick},
+    defines.events.on_tick,
     function (event)
         researchColor.validateIngredientColors()
         labColoring.updateRenderers(event, labRenderers, researchColor)

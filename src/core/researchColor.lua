@@ -1,23 +1,27 @@
+---@class ResearchColor
 local researchColor = {}
 
 -- constants
 
+---@type Color.0[]
 researchColor.defaultColors = { {r = 1.0, g = 0.0, b = 1.0} }
 
 -- state
 
-researchColor.state = {}
+-- researchColor.state = {}
 
-researchColor.validated = false
-
+---@param state ResearchColorState
+---@return ResearchColorState
 researchColor.linkState = function (state)
     researchColor.state = state
     return state
 end
 
 --- data validation
-local ingredientColors = prototypes.mod_data["discoscience-science-colors"].data
+local ingredientColors = prototypes.mod_data["discoscience-science-colors"].data --[[@as table<data.ItemID, Color>]]
 
+---@param color Color
+---@return Color.0?
 function researchColor.validateColor(color)
     ---@type Color.0
     local possibleColor = {
@@ -55,6 +59,9 @@ function researchColor.validateColor(color)
     }
 end
 
+---@param item data.ItemID
+---@param color Color
+---@return Color.0? validated_color return nil to get it removed from the color lookup
 local function validateSciencePack(item, color)
     local item_prototype = prototypes.item[item]
 
@@ -82,6 +89,10 @@ end
 
 
 researchColor.createInitialState = function()
+    ---@class ResearchColorState
+    ---@field validated boolean
+    ---@field researchColors table<data.TechnologyID, Color.0[]>
+    ---@field ingredientColors table<data.ItemID, Color.0>
     return {
         validated = false,
         researchColors = {},
@@ -89,12 +100,16 @@ researchColor.createInitialState = function()
     }
 end
 
+---@param name data.ItemID
+---@param color Color.0
 researchColor.setIngredientColor = function(name, color)
     local valid_color = researchColor.validateColor(color)
     if not valid_color then error("Invalid color given") end
     researchColor.state.ingredientColors[name] = valid_color
 end
 
+---@param name data.ItemID
+---@return Color.0
 researchColor.getIngredientColor = function(name)
     return researchColor.state.ingredientColors[name]
 end
@@ -104,7 +119,8 @@ researchColor.validateIngredientColors = function()
         return
     end
     researchColor.state.validated = true
-    local techPrototypes = prototypes.get_technology_filtered({})
+    local techPrototypes = prototypes.get_technology_filtered({}) -- NOTE: HUH? Why not just prototypes.technology
+    ---@type table<data.ItemID, true>
     local notFound = {}
     for _, tech in pairs(techPrototypes) do
         for _, ingredient in pairs(tech.research_unit_ingredients) do
@@ -130,7 +146,10 @@ researchColor.validateIngredientColors = function()
 end
 
 
+---@param tech LuaTechnology
+---@return Color.0[]
 researchColor.assembleColorsForResearch = function (tech)
+    ---@type Color.0[]
     local colors = {}
     for index, ingredient in pairs(tech.research_unit_ingredients) do
         local ingredientColor = researchColor.state.ingredientColors[ingredient.name]
@@ -144,6 +163,8 @@ researchColor.assembleColorsForResearch = function (tech)
     return colors
 end
 
+---@param tech LuaTechnology?
+---@return Color.0[]
 researchColor.getColorsForResearch = function (tech)
     if not tech then
         return researchColor.defaultColors

@@ -60,6 +60,12 @@ labColoring.chooseNewDirection = function()
     end
 end
 
+---@param lab LuaEntity
+---@param colors Color.0
+---@param hq boolean
+---@param playerPosition MapPosition
+---@param labRenderers LabRenderer
+---@param fcolor Color.0
 labColoring.updateRenderer = function (lab, colors, hq, playerPosition, labRenderers, fcolor)
     local animation = labRenderers.getRenderObjects(lab)
     if lab.status == working or lab.status == low_power then
@@ -79,12 +85,16 @@ labColoring.updateRenderer = function (lab, colors, hq, playerPosition, labRende
     end
 end
 
+---@param event EventData
+---@param labRenderers LabRenderer
+---@param researchColor ResearchColor
 labColoring.updateRenderers = function (event, labRenderers, researchColor)
-    local hq = settings.global["discoscience-high-quality"].value
+    local hq = settings.global["discoscience-high-quality"].value --[[@as boolean]]
     labColoring.state.meanderingTick = max(0, labColoring.state.meanderingTick + labColoring.state.direction)
     local stride = getStride(hq)
     local offset = event.tick % stride
     local fcolor = {r=0, g=0, b=0, a=0}
+    ---@type table<uint, {[1]:Color.0[], [2]:MapPosition}>
     local forceInfo = {}
     for name, force in pairs(game.forces) do
         local forceResearchColors = researchColor.getColorsForResearch(force.current_research)

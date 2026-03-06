@@ -1,3 +1,4 @@
+---@class LabRenderer
 local labRenderers = {}
 
 local draw_animation = rendering.draw_animation
@@ -8,14 +9,18 @@ local random = math.random
 
 labRenderers.state = nil
 
+---@param state LabRendererState
 labRenderers.linkState = function (state)
     labRenderers.state = state
     return state
 end
 
 -- Data Validation
-local labData = prototypes.mod_data["discoscience-lab-data"].data
+local labData = prototypes.mod_data["discoscience-lab-data"].data --[[@as table<data.EntityID, LabData>]]
 
+---@param lab data.EntityID
+---@param data LabData
+---@return LabData? validatedData return nil to get it removed from the data lookup
 local function validateLabData(lab, data)
     local labPrototype = prototypes.entity[lab]
     if not labPrototype then
@@ -44,6 +49,10 @@ for lab, data in pairs(labData) do
 end
 
 labRenderers.createInitialState = function()
+    ---@class LabRendererState
+    ---@field labs table<uint, LuaEntity>
+    ---@field labAnimations table<uint, LuaRenderObject>
+    ---@field labData table<data.EntityID, LabData>
     return {
         labs = {},
         labAnimations = {},
@@ -51,6 +60,7 @@ labRenderers.createInitialState = function()
     }
 end
 
+---@deprecated Trying to move to mod data
 labRenderers.setLabScale = function (name, scale)
     local labData = labRenderers.state.labData[name]
     if not labData then
@@ -63,9 +73,10 @@ labRenderers.setLabScale = function (name, scale)
     end
 end
 
+---@param entity LuaEntity
 labRenderers.createAnimation = function (entity)
     local labData = labRenderers.state.labData[entity.name]
-    labRenderers.state.labAnimations[entity.unit_number] = draw_animation({
+    labRenderers.state.labAnimations[entity.unit_number--[[@as uint]]] = draw_animation({
         animation = labData.animation,
         surface = entity.surface,
         target = entity,
@@ -77,24 +88,27 @@ labRenderers.createAnimation = function (entity)
     })
 end
 
+---@param entity LuaEntity
+---@return boolean
 labRenderers.isCompatibleLab = function (entity)
     if not entity.type == "lab" then return false end
     return labRenderers.state.labData[entity.name] and true or false
 end
 
+---@param entity LuaEntity
 labRenderers.addLab = function (entity)
-    if not entity or not entity.valid then
+    if not entity or not entity.valid
+    or not labRenderers.isCompatibleLab(entity) then
         return
     end
-    if labRenderers.isCompatibleLab(entity) then
-        local labUnitNumber = entity.unit_number
-        if labRenderers.state.labs[labUnitNumber] then
-            return
-        end
-        labRenderers.state.labs[labUnitNumber] = entity
-        if not labRenderers.state.labAnimations[labUnitNumber] then
-            labRenderers.createAnimation(entity)
-        end
+
+    local labUnitNumber = entity.unit_number--[[@as uint]]
+    if labRenderers.state.labs[labUnitNumber] then
+        return
+    end
+    labRenderers.state.labs[labUnitNumber] = entity
+    if not labRenderers.state.labAnimations[labUnitNumber] then
+        labRenderers.createAnimation(entity)
     end
     script.register_on_object_destroyed(entity)
 end
@@ -110,6 +124,7 @@ labRenderers.reloadLabs = function ()
     end
 end
 
+---@param labUnitNumber uint
 labRenderers.removeLab = function (labUnitNumber)
     labRenderers.state.labAnimations[labUnitNumber] = nil
     labRenderers.state.labs[labUnitNumber] = nil
@@ -119,6 +134,8 @@ labRenderers.getLabs = function()
     return labRenderers.state.labs
 end
 
+---@param entity LuaEntity
+---@return LuaRenderObject
 labRenderers.getRenderObjects = function(entity)
     local labUnitNumber = entity.unit_number
     if not labRenderers.state.labAnimations[labUnitNumber].valid then
