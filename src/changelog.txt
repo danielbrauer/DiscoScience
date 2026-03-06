@@ -3,6 +3,10 @@ Version: 2.0.2
 Date: 08. 12. 2024
   Changes:
     - Changed prototype name to fix incompatibility with Developer Assistant mod
+    - Support for custom lab animation graphics
+  Bugfixes:
+    - Actually use the HR graphics
+    - Validate and normalize given colors
 ---------------------------------------------------------------------------------------------------
 Version: 2.0.1
 Date: 12. 10. 2024
