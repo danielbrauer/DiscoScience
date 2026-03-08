@@ -3,13 +3,23 @@ local labChanges = {}
 local labData = data.raw["mod-data"]["discoscience-lab-data"].data
 
 ---@param lab data.LabPrototype
----@param animation? string
----@param scale? double
-labChanges.prepareLab = function (lab, animation, scale)
-    labData[lab.name] = {
-        animation = animation or "discoscience-lab-storm",
-        scale = scale or 1,
-    }
+---@param data? LabData
+labChanges.prepareLab = function (lab, data)
+    if not data then
+        data = {
+            animation = "discoscience-lab-storm",
+            scale = 1
+        }
+    else
+        if not data.animation then
+            data.animation = "discoscience-lab-storm"
+        end
+        if not data.scale then
+            data.scale = 1
+        end
+    end
+
+    labData[lab.name] = data
 
     lab.on_animation = lab.off_animation
     lab.created_effect = {
