@@ -23,6 +23,7 @@ local labData = prototypes.mod_data["discoscience-lab-data"].data --[[@as table<
 ---@return LabData? validatedData return nil to get it removed from the data lookup
 local function validateLabData(lab, data)
     local labPrototype = prototypes.entity[lab]
+    -- These are logs so stale data in the mod-data isn't a crashable offense
     if not labPrototype then
         log("Given lab data for non-existent lab: "..lab.."\t"..serpent.line(data))
         return nil
@@ -32,13 +33,16 @@ local function validateLabData(lab, data)
         return nil
     end
 
-    --FIXME: Can't check if a given animation is valid
-    -- The game has no way to currently check, so we need to ask for an interface
+    --FIXME: This has to wait for 2.1: https://forums.factorio.com/132999
+    -- if type(data.animation) ~= "string"
+    -- or not helpers.is_valid_animation_path(data.animation) then
+    --     error("Given animation name is not a valid animation: "..lab.." -> "..serpent.line(data.animation))
+    -- end
 
     if not data.scale then
         data.scale = 1
     elseif type(data.scale) ~= "number" then
-        error("Given animation scale")
+        error("Given animation scale is not a number: "..lab.." -> "..serpent.line(data.scale))
     end
 
     return data

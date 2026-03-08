@@ -65,6 +65,7 @@ end
 local function validateSciencePack(item, color)
     local item_prototype = prototypes.item[item]
 
+    -- These are logs so stale data in the mod-data isn't a crashable offense
     if not item_prototype then
         log("Given a color for a non-existent item: "..item.." - "..serpent.line(color))
         return nil
@@ -76,11 +77,9 @@ local function validateSciencePack(item, color)
 
     local valid_color = researchColor.validateColor(color)
     if not valid_color then
-        log("Given item color was not a valid color: "..item.." - "..serpent.line(color))
-        return nil
-    else
-        return valid_color
+        error("Given item color was not a valid color: "..item.." - "..serpent.line(color))
     end
+    return valid_color
 end
 
 for item, color in pairs(ingredientColors) do
