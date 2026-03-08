@@ -66,6 +66,11 @@ end
 
 ---@deprecated Trying to move to mod data
 labRenderers.setLabScale = function (name, scale)
+    if not scale then
+        labRenderers.state.labData[name] = nil
+        return
+    end
+
     local labData = labRenderers.state.labData[name]
     if not labData then
         labRenderers.state.labData[name] = {

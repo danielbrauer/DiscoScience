@@ -102,6 +102,11 @@ end
 ---@param name data.ItemID
 ---@param color Color.0
 researchColor.setIngredientColor = function(name, color)
+    if not color then 
+        researchColor.state.ingredientColors[name] = nil
+        return
+    end
+
     local valid_color = researchColor.validateColor(color)
     if not valid_color then error("Invalid color given") end
     researchColor.state.ingredientColors[name] = valid_color
