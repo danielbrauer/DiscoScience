@@ -13,28 +13,76 @@ labRenderers.linkState = function (state)
     return state
 end
 
+-- Data validation
+
+--- Return nil to get it removed from the data lookup
+local function validateLabData(lab, data)
+    local labPrototype = prototypes.entity[lab]
+    -- These are logs so stale data in the mod-data isn't a crashable offense
+    if not labPrototype then
+        log("Given lab data for non-existent lab: "..lab.."\t"..serpent.line(data))
+        return nil
+    end
+    if labPrototype.type ~= "lab" then
+        log("Given lab data for a non-lab entity: "..lab)
+        return nil
+    end
+
+    --FIXME: This has to wait for 2.1: https://forums.factorio.com/132999
+    -- if type(data.animation) ~= "string"
+    -- or not helpers.is_valid_animation_path(data.animation) then
+    --     error("Given animation name is not a valid animation: "..lab.." -> "..serpent.line(data.animation))
+    -- end
+
+    if not data.scale then
+        data.scale = 1
+    elseif type(data.scale) ~= "number" then
+        error("Given animation scale is not a number: "..lab.." -> "..serpent.line(data.scale))
+    end
+
+    return data
+end
+
+local labData = prototypes.mod_data["discoscience-lab-data"].data
+for lab, data in pairs(labData) do
+    labData[lab] = validateLabData(lab, data)
+end
+
 labRenderers.createInitialState = function()
     return {
         labs = {},
         labAnimations = {},
-        labScales = {
-            ["lab"] = 1,
-        }
+        labData = labData,
     }
 end
 
 labRenderers.setLabScale = function (name, scale)
-    labRenderers.state.labScales[name] = scale
+    if not scale then
+        labRenderers.state.labData[name] = nil
+        return
+    elseif type(scale) ~= "number" then
+        error("Given animation scale is not a number: "..serpent.line(scale))
+    end
+
+    local labData = labRenderers.state.labData[name]
+    if not labData then
+        labRenderers.state.labData[name] = {
+            animation = "discoscience-lab-storm",
+            scale = scale,
+        }
+    else
+        labData.scale = scale
+    end
 end
 
 labRenderers.createAnimation = function (entity)
-    local scale = labRenderers.state.labScales[entity.name]
+    local labData = labRenderers.state.labData[entity.name]
     labRenderers.state.labAnimations[entity.unit_number] = draw_animation({
-        animation = "discoscience-lab-storm",
+        animation = labData.animation,
         surface = entity.surface,
         target = entity,
-        x_scale = scale,
-        y_scale = scale,
+        x_scale = labData.scale,
+        y_scale = labData.scale,
         render_layer = "higher-object-under",
         animation_offset = floor(random()*300),
         visible = false,
@@ -43,10 +91,7 @@ end
 
 labRenderers.isCompatibleLab = function (entity)
     if not entity.type == "lab" then return false end
-    for name, _ in pairs(labRenderers.state.labScales) do
-        if entity.name == name then return true end
-    end
-    return false
+    return labRenderers.state.labData[entity.name] and true or false
 end
 
 labRenderers.addLab = function (entity)
