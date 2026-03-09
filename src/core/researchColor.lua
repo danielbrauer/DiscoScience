@@ -15,6 +15,41 @@ researchColor.linkState = function (state)
     return state
 end
 
+function researchColor.validateColor(color)
+    local possibleColor = {
+        r = color.r or color[1],
+        g = color.g or color[2],
+        b = color.b or color[3],
+        a = color.a or color[4],
+    }
+    local is_255, has_value, outside_bounds = false, false, false
+    for _, value in pairs(possibleColor) do
+        has_value = true
+        if value < 0 or value > 255 then
+            outside_bounds = true
+            break
+        end
+        if value > 1 then is_255 = true end
+    end
+
+    if outside_bounds or not has_value then
+        return nil
+    end
+
+    if is_255 then
+        for key, value in pairs(possibleColor) do
+            possibleColor[key] = value / 255
+        end
+    end
+
+    local alpha = possibleColor.a or 1
+    return {
+        r = (possibleColor.r or 0) * alpha,
+        g = (possibleColor.g or 0) * alpha,
+        b = (possibleColor.b or 0) * alpha,
+    }
+end
+
 researchColor.createInitialState = function()
     return {
         validated = false,
@@ -37,7 +72,13 @@ researchColor.createInitialState = function()
 end
 
 researchColor.setIngredientColor = function(name, color)
-    researchColor.state.ingredientColors[name] = color
+    if not color then
+        researchColor.state.ingredientColors[name] = nil
+    end
+
+    local validColor = researchColor.validateColor(color)
+    if not validColor then error("Invalid color given") end
+    researchColor.state.ingredientColors[name] = validColor
 end
 
 researchColor.getIngredientColor = function(name)
