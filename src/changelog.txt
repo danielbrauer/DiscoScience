@@ -3,6 +3,8 @@ Version: 2.0.2
 Date: 08. 12. 2024
   Changes:
     - Changed prototype name to fix incompatibility with Developer Assistant mod
+  Bugfixes:
+    - Actually use the high resolution graphics
 ---------------------------------------------------------------------------------------------------
 Version: 2.0.1
 Date: 12. 10. 2024
