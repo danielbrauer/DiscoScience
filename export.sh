@@ -1,2 +1,2 @@
 #!/bin/bash
-git archive --format zip --prefix=mod/ --output ../DiscoScience.zip master
+git archive --format zip --output ../DiscoScience.zip master ./src/
