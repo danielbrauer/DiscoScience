@@ -89,18 +89,14 @@ script.on_configuration_changed(
 )
 
 script.on_event(
-    {
-        defines.events.on_script_trigger_effect
-    },
+    defines.events.on_script_trigger_effect,
     function (event)
         labRenderers.addLab(event.target_entity)
     end
 )
 
 script.on_event(
-    {
-        defines.events.on_object_destroyed
-    },
+    defines.events.on_object_destroyed,
     function (event)
         if event.type ~= defines.target_type.entity then return end
         labRenderers.removeLab(event.useful_id)
@@ -116,7 +112,7 @@ script.on_nth_tick(
 )
 
 script.on_event(
-    {defines.events.on_tick},
+    defines.events.on_tick,
     function (event)
         researchColor.validateIngredientColors()
         labColoring.updateRenderers(event, labRenderers, researchColor)

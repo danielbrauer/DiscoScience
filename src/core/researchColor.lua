@@ -8,8 +8,6 @@ researchColor.defaultColors = { {r = 1.0, g = 0.0, b = 1.0} }
 
 researchColor.state = {}
 
-researchColor.validated = false
-
 researchColor.linkState = function (state)
     researchColor.state = state
     return state
@@ -49,16 +47,11 @@ researchColor.validateIngredientColors = function()
         return
     end
     researchColor.state.validated = true
-    local techPrototypes = prototypes.get_technology_filtered({})
+    local techPrototypes = prototypes.technology
     local notFound = {}
     for _, tech in pairs(techPrototypes) do
         for _, ingredient in pairs(tech.research_unit_ingredients) do
-            local found = false
-            for name, _ in pairs(researchColor.state.ingredientColors) do
-                if name == ingredient.name then
-                    found = true
-                end
-            end
+            local found = researchColor.state.ingredientColors[ingredient.name] and true or false
             if not (found or notFound[ingredient.name]) then
                 notFound[ingredient.name] = true
             end
@@ -76,14 +69,15 @@ end
 
 
 researchColor.assembleColorsForResearch = function (tech)
-    local colors = {}
+    local colors, colorCount = {}, 0
     for index, ingredient in pairs(tech.research_unit_ingredients) do
         local ingredientColor = researchColor.state.ingredientColors[ingredient.name]
         if ingredientColor then
-            colors[#colors + 1] = ingredientColor
+            colorCount = colorCount + 1
+            colors[colorCount] = ingredientColor
         end
     end
-    if #colors == 0 then
+    if colorCount == 0 then
         colors = researchColor.defaultColors
     end
     return colors

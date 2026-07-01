@@ -36,7 +36,7 @@ labRenderers.createAnimation = function (entity)
         x_scale = scale,
         y_scale = scale,
         render_layer = "higher-object-under",
-        animation_offset = floor(random()*300),
+        animation_offset = random(300)-1, -- `random()` is [0,1), but `random(m)` is [1,m]
         visible = false,
     })
 end
@@ -50,18 +50,18 @@ labRenderers.isCompatibleLab = function (entity)
 end
 
 labRenderers.addLab = function (entity)
-    if not entity or not entity.valid then
+    if not entity or not entity.valid
+    or not labRenderers.isCompatibleLab(entity) then
         return
     end
-    if labRenderers.isCompatibleLab(entity) then
-        local labUnitNumber = entity.unit_number
-        if labRenderers.state.labs[labUnitNumber] then
-            return
-        end
-        labRenderers.state.labs[labUnitNumber] = entity
-        if not labRenderers.state.labAnimations[labUnitNumber] then
-            labRenderers.createAnimation(entity)
-        end
+
+    local labUnitNumber = entity.unit_number
+    if labRenderers.state.labs[labUnitNumber] then
+        return
+    end
+    labRenderers.state.labs[labUnitNumber] = entity
+    if not labRenderers.state.labAnimations[labUnitNumber] then
+        labRenderers.createAnimation(entity)
     end
     script.register_on_object_destroyed(entity)
 end
@@ -70,8 +70,7 @@ labRenderers.reloadLabs = function ()
     labRenderers.state.labs = {}
     labRenderers.state.labAnimations = {}
     rendering.clear("DiscoScience")
-    for surfaceIndex in pairs(game.surfaces) do
-        local surface = game.get_surface(surfaceIndex)
+    for _, surface in pairs(game.surfaces) do
         for index, lab in ipairs(surface.find_entities_filtered({type = "lab"})) do
             labRenderers.addLab(lab)
         end
