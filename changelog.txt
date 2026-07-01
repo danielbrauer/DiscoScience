@@ -1,10 +1,11 @@
 ---------------------------------------------------------------------------------------------------
-Version: 2.0.2
-Date: 08. 12. 2024
+Version: 2.1
+Date: 01. 07. 2026
   Changes:
-    - Changed prototype name to fix incompatibility with Developer Assistant mod
+    - Polish translation (thanks Hacai666!)
+    - Require 2.1 (thanks paulvandenburg!)
   Bugfixes:
-    - Actually use the high resolution graphics
+    - Actually use the high resolution graphics thanks (thanks PennyJim!)
 ---------------------------------------------------------------------------------------------------
 Version: 2.0.1
 Date: 12. 10. 2024
